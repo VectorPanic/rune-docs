@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: media/sound/Sound.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: media/sound/Sound.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>//------------------------------------------------------------------------------
+// Constructor scope
+//------------------------------------------------------------------------------
+
+/**
+ * Creates a new Sound object.
+ *
+ * @constructor
+ * @package
+ *
+ * @param {rune.media.SoundChannel} channel The channel that "owns" the object.
+ * @param {string} resource The name of the audio resource to be used.
+ * @param {boolean} [unique=false] Whether the object should be unique or shared.
+ *
+ * @class
+ * @classdesc
+ * 
+ * The Sound class represents a sound that can be played in an audio channel. 
+ * The class offers an interface for playing a specific sound. It is the sound 
+ * channel that does the actual playback.
+ */
+rune.media.Sound = function(channel, resource, unique) {
+
+    //--------------------------------------------------------------------------
+    // Private properties
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Name of the resource file used as the audio source.
+     *
+     * @type {string}
+     * @private
+     */
+    this.m_resource = resource;
+    
+    /**
+     * The audio channel object that created the Sound object.
+     *
+     * @type {rune.media.SoundChannel}
+     * @private
+     */
+    this.m_channel = channel;
+    
+    /**
+     * Playback speed.
+     *
+     * @type {number}
+     * @private
+     */
+    this.m_rate = 1.0;
+    
+    /**
+     * Sound source.
+     *
+     * @type {MediaElementAudioSourceNode}
+     * @private
+     */
+    this.m_source = null;
+    
+    /**
+     * Stereo panner node.
+     *
+     * @type {StereoPannerNode}
+     * @private
+     */
+    this.m_stereoPanner = null;
+    
+    /**
+     * Whether the object is unique or shared.
+     *
+     * @type {boolean}
+     * @private
+     */
+    this.m_unique = Boolean(unique);
+    
+    /**
+     * Tween system used for volume management.
+     *
+     * @type {rune.tween.Tweens}
+     * @private
+     */
+    this.m_tweens = null;
+
+    //--------------------------------------------------------------------------
+    // Constructor call
+    //--------------------------------------------------------------------------
+
+    /**
+     * Invokes secondary class constructor.
+     */
+    this.m_construct();
+};
+
+//------------------------------------------------------------------------------
+// Public prototype getter and setter methods
+//------------------------------------------------------------------------------
+
+/**
+ * Refers to the audio channel that created the audio object and thus the 
+ * object is bound to.
+ *
+ * @member {rune.media.SoundChannel} channel
+ * @memberof rune.media.Sound
+ * @instance
+ * @readonly
+ */
+Object.defineProperty(rune.media.Sound.prototype, "channel", {
+    /**
+     * @this rune.media.Sound
+     * @ignore
+     */
+    get : function() {
+        return this.m_channel;
+    }
+});
+
+/**
+ * A boolean value which is true if the media contained in the element has 
+ * finished playing.
+ *
+ * @member {boolean} ended
+ * @memberof rune.media.Sound
+ * @instance
+ * @readonly
+ */
+Object.defineProperty(rune.media.Sound.prototype, "ended", {
+    /**
+     * @this rune.media.Sound
+     * @ignore
+     */
+    get : function() {
+        return this.m_source['mediaElement'].ended;
+    }
+});
+
+/**
+ * Whether the Sound object should start over when it reaches the end. This can 
+ * for example be useful for background music.
+ *
+ * @member {boolean} loop
+ * @memberof rune.media.Sound
+ * @instance
+ */
+Object.defineProperty(rune.media.Sound.prototype, "loop", {
+    /**
+     * @this rune.media.Sound
+     * @ignore
+     */
+    get : function() {
+        return this.m_source['mediaElement'].loop;
+    },
+    
+    /**
+     * @this rune.media.Sound
+     * @ignore
+     */
+    set : function(value) {
+        this.m_source['mediaElement'].loop = value;
+    }
+});
+
+/**
+ * The name of the resource file used as the audio source for the Sound object.
+ *
+ * @member {string} name
+ * @memberof rune.media.Sound
+ * @instance
+ * @readonly
+ */
+Object.defineProperty(rune.media.Sound.prototype, "name", {
+    /**
+     * @this rune.media.Sound
+     * @ignore
+     */
+    get : function() {
+        return this.m_resource;
+    }
+});
+
+/**
+ * Pan represented by a floating point number between -1 (left) and 1 (right). 
+ * The default value is 0 and distributes the sound evenly between the left 
+ * and right speakers.
+ *
+ * @member {number} pan
+ * @memberof rune.media.Sound
+ * @instance
+ */
+Object.defineProperty(rune.media.Sound.prototype, "pan", {
+    /**
+     * @this rune.media.Sound
+     * @ignore
+     */
+    get : function() {
+        return this.m_stereoPanner['pan'].value;
+    },
+    
+    /**
+     * @this rune.media.Sound
+     * @ignore
+     */
+    set : function(value) {
+        this.m_stereoPanner['pan'].value = rune.util.Math.clamp(value, -1.0, 1.0);
+    }
+});
+
+/**
+ * Whether the sound is paused (true) or not (false).
+ *
+ * @member {boolean} paused
+ * @memberof rune.media.Sound
+ * @instance
+ * @readonly
+ */
+Object.defineProperty(rune.media.Sound.prototype, "paused", {
+    /**
+     * @this rune.media.Sound
+     * @ignore
+     */
+    get : function() {
+        return this.m_source['mediaElement'].paused;
+    }
+});
+
+/**
+ * The object's true playback speed, ie the speed relative to the playback 
+ * speed of the audio channel to which the object is connected.
+ *
+ * @member {number} playbackRate
+ * @memberof rune.media.Sound
+ * @instance
+ * @readonly
+ */
+Object.defineProperty(rune.media.Sound.prototype, "playbackRate", {
+    /**
+     * @this rune.media.Sound
+     * @ignore
+     */
+    get : function() {
+        return this.m_source['mediaElement'].playbackRate;
+    }
+});
+
+/**
+ * Whether or not the browser should adjust the pitch of the audio to 
+ * compensate for changes to the playback rate.
+ *
+ * @member {boolean} preservesPitch
+ * @memberof rune.media.Sound
+ * @instance
+ * @default true
+ */
+Object.defineProperty(rune.media.Sound.prototype, "preservesPitch", {
+    /**
+     * @this rune.media.Sound
+     * @ignore
+     */
+    get : function() {
+        return this.m_source['mediaElement'].preservesPitch;
+    },
+    
+    /**
+     * @this rune.media.Sound
+     * @ignore
+     */
+    set : function(value) {
+        this.m_source['mediaElement'].preservesPitch = value;
+    }
+});
+
+/**
+ * Sets the rate at which the media is being played back. This is used to 
+ * implement user controls for fast forward, slow motion, and so forth. The 
+ * normal playback rate is multiplied by this value to obtain the current 
+ * rate, so a value of 1.0 indicates normal speed.
+ *
+ * @member {number} rate
+ * @memberof rune.media.Sound
+ * @instance
+ * @default 1.0
+ */
+Object.defineProperty(rune.media.Sound.prototype, "rate", {
+    /**
+     * @this rune.media.Sound
+     * @ignore
+     */
+    get : function() {
+        return this.m_rate;
+    },
+    
+    /**
+     * @this rune.media.Sound
+     * @ignore
+     */
+    set : function(value) {
+        this.m_rate = value;
+        //this.m_source['mediaElement'].playbackRate = this.m_rate * this.m_channel['rate'];
+    }
+});
+
+/**
+ * A double-precision floating-point value indicating the current playback 
+ * time in seconds; if the media has not started to play and has not been 
+ * seeked, this value is the media's initial playback time. Setting this value 
+ * seeks the media to the new time. The time is specified relative to the 
+ * media's timeline.
+ *
+ * @member {number} time
+ * @memberof rune.media.Sound
+ * @instance
+ */
+Object.defineProperty(rune.media.Sound.prototype, "time", {
+    /**
+     * @this rune.media.Sound
+     * @ignore
+     */
+    get : function() {
+        return this.m_source['mediaElement'].currentTime;
+    },
+    
+    /**
+     * @this rune.media.Sound
+     * @ignore
+     */
+    set : function(value) {
+        this.m_source['mediaElement'].currentTime = value;
+    }
+});
+
+/**
+ * Sound The object's sound volume. Volume is given as a floating point number 
+ * between 0 (0%) and 1 (100%).
+ *
+ * @member {number} volume
+ * @memberof rune.media.Sound
+ * @instance
+ */
+Object.defineProperty(rune.media.Sound.prototype, "volume", {
+    /**
+     * @this rune.media.Sound
+     * @ignore
+     */
+    get : function() {
+        return this.m_source['mediaElement'].volume;
+    },
+    
+    /**
+     * @this rune.media.Sound
+     * @ignore
+     */
+    set : function(value) {
+        this.m_source['mediaElement'].volume = rune.util.Math.clamp(value, 0.0, 1.0);
+    }
+});
+
+/**
+ * Whether the Sound object is unique (true) or shared (false).
+ *
+ * @member {boolean} unique
+ * @memberof rune.media.Sound
+ * @instance
+ * @readonly
+ */
+Object.defineProperty(rune.media.Sound.prototype, "unique", {
+    /**
+     * @this rune.media.Sound
+     * @ignore
+     */
+    get : function() {
+        return this.m_unique;
+    }
+});
+
+//------------------------------------------------------------------------------
+// Public prototype methods (API)
+//------------------------------------------------------------------------------
+
+/**
+ * Adjust the volume of the audio channel to a certain level.
+ *
+ * @param {number} to Target volume.
+ * @param {number} duration Fade duration.
+ *
+ * @returns {undefined}
+ */
+rune.media.Sound.prototype.fade = function(to, duration) {
+    this.m_tweens.clear();
+    this.m_tweens.create({
+        target: this,
+        transition: rune.tween.Sine.easeIn,
+        duration: duration || 2500,
+        args: {
+            volume: to || 0
+        },
+    });
+};
+
+/**
+ * Pause audio playback.
+ *
+ * @returns {undefined}
+ */
+rune.media.Sound.prototype.pause = function() {
+    this.m_source['mediaElement'].pause();
+};
+
+/**
+ * Start audio playback.
+ *
+ * @param {boolean} [restart=false] Restarts playback (if it is playing).
+ *
+ * @returns {undefined}
+ */
+rune.media.Sound.prototype.play = function(restart) {
+    if (restart == true) {
+        this.m_source['mediaElement'].currentTime = 0;
+    }
+
+    this.m_source['mediaElement'].play();
+};
+
+/**
+ * Resumes current audio playback.
+ *
+ * @returns {undefined}
+ */
+rune.media.Sound.prototype.resume = function() {
+    this.play(false);
+};
+
+/**
+ * Stops current audio playback.
+ *
+ * @returns {undefined}
+ */
+rune.media.Sound.prototype.stop = function() {
+    this.m_source['mediaElement'].pause();
+    this.m_source['mediaElement'].currentTime = 0;
+};
+
+//------------------------------------------------------------------------------
+// Public prototype methods (ENGINE)
+//------------------------------------------------------------------------------
+
+/**
+ * Destroys the audio object and frees allocated memory. The method can be used 
+ * to remove and destroy Sound objects, but the recommended way to remove 
+ * (and destroy) a Sound object is via the remove method of the sound channel 
+ * on which the object was created.
+ *
+ * @returns {undefined}
+ */
+rune.media.Sound.prototype.dispose = function() {
+    this.m_disposeStereoPanner();
+    this.m_disposeSource();
+    this.m_disposeChannel();
+};
+
+//------------------------------------------------------------------------------
+// Internal prototype methods
+//------------------------------------------------------------------------------
+
+/**
+ * Connects the Sound object to an sound channel.
+ *
+ * @param {AudioNode} node Audio node to connect to.
+ *
+ * @returns {undefined}
+ * @package
+ * @ignore
+ * @suppress {checkTypes}
+ */
+rune.media.Sound.prototype.connect = function(node) {
+    this.m_stereoPanner.connect(node);
+    this['rate'] = 1.0;
+};
+
+/**
+ * Updates the Sound object.
+ *
+ * @param {number} step Current time step.
+ *
+ * @returns {undefined}
+ * @package
+ * @ignore
+ */
+rune.media.Sound.prototype.update = function(step) {
+    this.m_updateRate(step);
+    this.m_updateTweens(step);
+};
+
+//------------------------------------------------------------------------------
+// Protected prototype methods
+//------------------------------------------------------------------------------
+
+/**
+ * The class constructor.
+ *
+ * @returns {undefined}
+ * @protected
+ * @ignore
+ */
+rune.media.Sound.prototype.m_construct = function() {
+    this.m_constructSource();
+    this.m_constructStereoPanner();
+    this.m_constructTweens();
+};
+
+//------------------------------------------------------------------------------
+// Private prototype methods
+//------------------------------------------------------------------------------
+
+/**
+ * Creates an audio source based on the resource used to represent the sound 
+ * object.
+ *
+ * @returns {undefined}
+ * @private
+ */
+rune.media.Sound.prototype.m_constructSource = function() {
+    this.m_disposeSource();
+    if (this.m_source == null &amp;&amp; this.m_channel != null) {
+        var resource = rune.system.Application['instance']['resources'].get(this.m_resource);
+        this.m_source = this.m_channel['context'].createMediaElementSource(resource['data'].cloneNode());
+    } else throw new Error();
+};
+
+/**
+ * Creates the stereo panner node.
+ *
+ * @returns {undefined}
+ * @private
+ */
+rune.media.Sound.prototype.m_constructStereoPanner = function() {
+    this.m_disposeStereoPanner();
+    if (this.m_stereoPanner == null &amp;&amp; this.m_channel != null) {
+        this.m_stereoPanner = this.m_channel['context'].createStereoPanner();
+        this.m_source.connect(this.m_stereoPanner);
+    } else throw new Error();
+};
+
+/**
+ * Creates the Tween system.
+ *
+ * @returns {undefined}
+ * @private
+ */
+rune.media.Sound.prototype.m_constructTweens = function() {
+    this.m_disposeTweens();
+    if (this.m_tweens == null) {
+        this.m_tweens = new rune.tween.Tweens();
+    } else throw new Error();
+};
+
+/**
+ * Calculates and updates the playback speed (rate) based on the speed of the 
+ * audio object and audio channel.
+ *
+ * @param {number} step Current time step.
+ *
+ * @returns {undefined}
+ * @private
+ */
+rune.media.Sound.prototype.m_updateRate = function(step) {
+    if (this.m_source &amp;&amp; this.m_channel) {
+        this.m_source['mediaElement'].playbackRate = this.m_rate * this.m_channel['rate'];
+    }
+};
+
+/**
+ * Updates the Tween system.
+ *
+ * @param {number} step Current time step.
+ *
+ * @returns {undefined}
+ * @private
+ */
+rune.media.Sound.prototype.m_updateTweens = function(step) {
+    if (this.m_tweens) {
+        this.m_tweens.update(step);
+    }
+};
+
+/**
+ * Removes the Tween system.
+ *
+ * @returns {undefined}
+ * @private
+ */
+rune.media.Sound.prototype.m_disposeTweens = function() {
+    if (this.m_tweens instanceof rune.tween.Tweens) {
+        this.m_tweens.dispose();
+        this.m_tweens = null;
+    }
+};
+
+/**
+ * Disconnects the object from the audio channel.
+ *
+ * @returns {undefined}
+ * @private
+ */
+rune.media.Sound.prototype.m_disposeChannel = function() {
+    if (this.m_channel != null) {
+        this.m_channel.remove(this, false);
+        this.m_channel = null;   
+    }
+};
+
+/**
+ * Removes the stereo panner node.
+ *
+ * @returns {undefined}
+ * @private
+ */
+rune.media.Sound.prototype.m_disposeStereoPanner = function() {
+    if (this.m_stereoPanner instanceof StereoPannerNode) {
+        this.m_stereoPanner.disconnect();
+        this.m_stereoPanner = null;
+    }
+};
+
+/**
+ * Removes the audio source.
+ *
+ * @returns {undefined}
+ * @private
+ */
+rune.media.Sound.prototype.m_disposeSource = function() {
+    if (this.m_source != null) {
+        this.m_source.disconnect();
+        this.m_source  = null;
+    }
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="rune.html">rune</a></li><li><a href="rune.animation.html">animation</a></li><li><a href="rune.camera.html">camera</a></li><li><a href="rune.color.html">color</a></li><li><a href="rune.console.html">console</a></li><li><a href="rune.data.html">data</a></li><li><a href="rune.debug.html">debug</a></li><li><a href="rune.display.html">display</a></li><li><a href="rune.geom.html">geom</a></li><li><a href="rune.input.html">input</a></li><li><a href="rune.media.html">media</a></li><li><a href="rune.net.html">net</a></li><li><a href="rune.physics.html">physics</a></li><li><a href="rune.resource.html">resource</a></li><li><a href="rune.scene.html">scene</a></li><li><a href="rune.state.html">state</a></li><li><a href="rune.system.html">system</a></li><li><a href="rune.text.html">text</a></li><li><a href="rune.tilemap.html">tilemap</a></li><li><a href="rune.timer.html">timer</a></li><li><a href="rune.tween.html">tween</a></li><li><a href="rune.ui.html">ui</a></li><li><a href="rune.util.html">util</a></li></ul><h3>Classes</h3><ul><li><a href="rune.animation.Animation.html">Animation</a></li><li><a href="rune.animation.Animations.html">Animations</a></li><li><a href="rune.animation.AnimationScripts.html">AnimationScripts</a></li><li><a href="rune.camera.Camera.html">Camera</a></li><li><a href="rune.camera.CameraFade.html">CameraFade</a></li><li><a href="rune.camera.CameraFlash.html">CameraFlash</a></li><li><a href="rune.camera.Cameras.html">Cameras</a></li><li><a href="rune.camera.CameraShake.html">CameraShake</a></li><li><a href="rune.camera.CameraTargets.html">CameraTargets</a></li><li><a href="rune.camera.CameraTint.html">CameraTint</a></li><li><a href="rune.camera.CameraTintTween.html">CameraTintTween</a></li><li><a href="rune.camera.CameraViewport.html">CameraViewport</a></li><li><a href="rune.color.Color24.html">Color24</a></li><li><a href="rune.color.Color32.html">Color32</a></li><li><a href="rune.color.ColorComponent.html">ColorComponent</a></li><li><a href="rune.console.Console.html">Console</a></li><li><a href="rune.console.ConsoleCommand.html">ConsoleCommand</a></li><li><a href="rune.console.ConsoleCommands.html">ConsoleCommands</a></li><li><a href="rune.console.ConsoleCursor.html">ConsoleCursor</a></li><li><a href="rune.console.ConsoleHistory.html">ConsoleHistory</a></li><li><a href="rune.console.ConsoleInput.html">ConsoleInput</a></li><li><a href="rune.console.ConsoleManager.html">ConsoleManager</a></li><li><a href="rune.console.ConsoleOutput.html">ConsoleOutput</a></li><li><a href="rune.data.Highscores.html">Highscores</a></li><li><a href="rune.data.Loader.html">Loader</a></li><li><a href="rune.data.LoaderDebug.html">LoaderDebug</a></li><li><a href="rune.data.Logo.html">Logo</a></li><li><a href="rune.data.Requests.html">Requests</a></li><li><a href="rune.debug.Debugger.html">Debugger</a></li><li><a href="rune.debug.Framerate.html">Framerate</a></li><li><a href="rune.debug.Histogram.html">Histogram</a></li><li><a href="rune.debug.Master.html">Master</a></li><li><a href="rune.debug.Memory.html">Memory</a></li><li><a href="rune.debug.Music.html">Music</a></li><li><a href="rune.debug.Render.html">Render</a></li><li><a href="rune.debug.Sound.html">Sound</a></li><li><a href="rune.debug.Update.html">Update</a></li><li><a href="rune.display.Artboard.html">Artboard</a></li><li><a href="rune.display.Canvas.html">Canvas</a></li><li><a href="rune.display.DisplayGroup.html">DisplayGroup</a></li><li><a href="rune.display.DisplayGroups.html">DisplayGroups</a></li><li><a href="rune.display.DisplayObject.html">DisplayObject</a></li><li><a href="rune.display.DisplayObjectContainer.html">DisplayObjectContainer</a></li><li><a href="rune.display.Flicker.html">Flicker</a></li><li><a href="rune.display.Frame.html">Frame</a></li><li><a href="rune.display.Graphic.html">Graphic</a></li><li><a href="rune.display.Graphics.html">Graphics</a></li><li><a href="rune.display.Hitbox.html">Hitbox</a></li><li><a href="rune.display.InteractiveObject.html">InteractiveObject</a></li><li><a href="rune.display.Quadtree.html">Quadtree</a></li><li><a href="rune.display.Screen.html">Screen</a></li><li><a href="rune.display.Sprite.html">Sprite</a></li><li><a href="rune.display.Stage.html">Stage</a></li><li><a href="rune.display.Texture.html">Texture</a></li><li><a href="rune.geom.Point.html">Point</a></li><li><a href="rune.geom.Rectangle.html">Rectangle</a></li><li><a href="rune.geom.Vector2D.html">Vector2D</a></li><li><a href="rune.input.Gamepad.html">Gamepad</a></li><li><a href="rune.input.Gamepads.html">Gamepads</a></li><li><a href="rune.input.GamepadsOptions.html">GamepadsOptions</a></li><li><a href="rune.input.Inputs.html">Inputs</a></li><li><a href="rune.input.Keyboard.html">Keyboard</a></li><li><a href="rune.input.KeyboardKey.html">KeyboardKey</a></li><li><a href="rune.input.KeyboardOptions.html">KeyboardOptions</a></li><li><a href="rune.media.Sound.html">Sound</a></li><li><a href="rune.media.SoundChannel.html">SoundChannel</a></li><li><a href="rune.media.Sounds.html">Sounds</a></li><li><a href="rune.net.URLLoader.html">URLLoader</a></li><li><a href="rune.net.URLRequest.html">URLRequest</a></li><li><a href="rune.net.URLResponse.html">URLResponse</a></li><li><a href="rune.physics.Space.html">Space</a></li><li><a href="rune.physics.Velocity.html">Velocity</a></li><li><a href="rune.resource.Request.html">Request</a></li><li><a href="rune.resource.Requester.html">Requester</a></li><li><a href="rune.resource.RequesterOptions.html">RequesterOptions</a></li><li><a href="rune.resource.Requests.html">Requests</a></li><li><a href="rune.resource.Resource.html">Resource</a></li><li><a href="rune.resource.Resources.html">Resources</a></li><li><a href="rune.scene.Scene.html">Scene</a></li><li><a href="rune.scene.Scenes.html">Scenes</a></li><li><a href="rune.state.State.html">State</a></li><li><a href="rune.state.States.html">States</a></li><li><a href="rune.system.Application.html">Application</a></li><li><a href="rune.system.Config.html">Config</a></li><li><a href="rune.system.Time.html">Time</a></li><li><a href="rune.text.BitmapField.html">BitmapField</a></li><li><a href="rune.text.BitmapFormat.html">BitmapFormat</a></li><li><a href="rune.tilemap.Block.html">Block</a></li><li><a href="rune.tilemap.Tile.html">Tile</a></li><li><a href="rune.tilemap.Tilemap.html">Tilemap</a></li><li><a href="rune.tilemap.TilemapLayer.html">TilemapLayer</a></li><li><a href="rune.timer.Timer.html">Timer</a></li><li><a href="rune.timer.TimerOptions.html">TimerOptions</a></li><li><a href="rune.timer.Timers.html">Timers</a></li><li><a href="rune.tween.Sine.html">Sine</a></li><li><a href="rune.tween.Tween.html">Tween</a></li><li><a href="rune.tween.Tweens.html">Tweens</a></li><li><a href="rune.tween.TweenValue.html">TweenValue</a></li><li><a href="rune.ui.Counter.html">Counter</a></li><li><a href="rune.ui.CounterDigit.html">CounterDigit</a></li><li><a href="rune.ui.Progressbar.html">Progressbar</a></li><li><a href="rune.ui.VTList.html">VTList</a></li><li><a href="rune.ui.VTListElement.html">VTListElement</a></li><li><a href="rune.ui.VTMenu.html">VTMenu</a></li><li><a href="rune.ui.VTMenuPointer.html">VTMenuPointer</a></li><li><a href="rune.util.Executable.html">Executable</a></li><li><a href="rune.util.Filter.html">Filter</a></li><li><a href="rune.util.Math.html">Math</a></li><li><a href="rune.util.Palette.html">Palette</a></li><li><a href="rune.util.Path.html">Path</a></li><li><a href="rune.util.Paths.html">Paths</a></li><li><a href="rune.util.Stack.html">Stack</a></li><li><a href="rune.util.URL.html">URL</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Mon Feb 20 2023 14:40:19 GMT+0100 (Central European Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

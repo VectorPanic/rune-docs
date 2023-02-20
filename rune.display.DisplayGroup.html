@@ -1,0 +1,4383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Class: DisplayGroup</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Class: DisplayGroup</h1>
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2><span class="attribs"><span class="type-signature"></span></span>
+            <span class="ancestors"><a href="rune.html">rune</a><a href="rune.display.html">.display</a>.</span>DisplayGroup<span class="signature">(container)</span><span class="type-signature"></span></h2>
+        
+            <div class="class-description">The DisplayGroup class represents a collection (usually a subset) of display 
+objects from one and the same display object container. The group offers 
+easy access to the collection as you do not have to go through the entire 
+display object container to find them. The contents of the group are 
+automatically synchronized with the contents of the display object 
+container, ie if an object is added to the group, it is also added as a 
+child object to the container. A group also offers fast and easy collision 
+handling of display objects that are part of the group, but the group is not 
+limited to handling internal collisions; it is also possible to hit test 
+against objects that are not group members.</div>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+    <h2>Constructor</h2>
+    
+
+    
+    <h4 class="name" id="DisplayGroup"><span class="type-signature"></span>new DisplayGroup<span class="signature">(container)</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Creates a new instance of the DisplayGroup class.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>container</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="rune.display.DisplayObjectContainer.html">rune.display.DisplayObjectContainer</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Display object container object that will contain members.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line26">line 26</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    </div>
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="active"><span class="type-signature"></span>active<span class="type-signature"> :boolean</span></h4>
+
+
+
+
+<div class="description">
+    Whether the group is active (true) or not (false). Inactive groups are 
+not automatically updated by the group manager.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">boolean</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-default">Default Value:</dt>
+    <dd class="tag-default"><ul class="dummy">
+            <li>true</li>
+        </ul></dd>
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line39">line 39</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="application"><span class="type-signature">(readonly) </span>application<span class="type-signature"> :rune.system.Main</span></h4>
+
+
+
+
+<div class="description">
+    Reference to the application's entry point class, ie. the main class of the 
+application. Useful for accessing the application's subsystem.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">rune.system.Main</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line89">line 89</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="cameras"><span class="type-signature">(readonly) </span>cameras<span class="type-signature"> :<a href="rune.camera.Cameras.html">rune.camera.Cameras</a></span></h4>
+
+
+
+
+<div class="description">
+    Reference to the current scene's camera system.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type"><a href="rune.camera.Cameras.html">rune.camera.Cameras</a></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line108">line 108</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="container"><span class="type-signature">(readonly) </span>container<span class="type-signature"> :<a href="rune.display.DisplayObject.html">rune.display.DisplayObject</a></span></h4>
+
+
+
+
+<div class="description">
+    Reference to the display object container to which the group is linked. When 
+new members are added to the group, they are also added to the display 
+object container's display list.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type"><a href="rune.display.DisplayObject.html">rune.display.DisplayObject</a></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line126">line 126</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="keyboard"><span class="type-signature">(readonly) </span>keyboard<span class="type-signature"> :<a href="rune.input.Keyboard.html">rune.input.Keyboard</a></span></h4>
+
+
+
+
+<div class="description">
+    Reference to the subsystem representing the keyboard input.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type"><a href="rune.input.Keyboard.html">rune.input.Keyboard</a></span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line146">line 146</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="numMembers"><span class="type-signature">(readonly) </span>numMembers<span class="type-signature"> :number</span></h4>
+
+
+
+
+<div class="description">
+    The number of members included in the group. Note that this number is not 
+necessarily the same as the number of children in the display object 
+container to which the group is linked.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">number</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line164">line 164</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="useQuadtree"><span class="type-signature"></span>useQuadtree<span class="type-signature"> :boolean</span></h4>
+
+
+
+
+<div class="description">
+    Whether the group should use a quad tree to improve hit testing performance. 
+Note that the quad tree can not guarantee noticeably better performance, but 
+it should be evaluated when you experience performance problems with the 
+quad tree disabled.
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">boolean</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line184">line 184</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="addMember"><span class="type-signature"></span>addMember<span class="signature">(member)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Adds a member to the display group. Note that attempts to add existing 
+members are denied. The method always returns a boolean that indicates 
+whether the extension was successful (true) or not (false). When an item is 
+added to a group, it is automatically removed from any other groups, and it 
+is also removed from other display lists. This means that an object can only 
+be a member of one group at a time and that it is always available in the 
+group's container object view list as long as it is a member of that group.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>member</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="rune.display.DisplayObject.html">rune.display.DisplayObject</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Prospect to add.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line233">line 233</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="dispose"><span class="type-signature"></span>dispose<span class="signature">()</span><span class="type-signature"> &rarr; {undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    This method is called automatically just before the group is destroyed. 
+Override the method for creating your own deallocation code, ie code that 
+deletes objects created by the group.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line621">line 621</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">undefined</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="forEachMember"><span class="type-signature"></span>forEachMember<span class="signature">(callback, scope)</span><span class="type-signature"> &rarr; {undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Executes a callback method for each member of the group. Reference to the 
+current member and its member index are sent to the callback method as 
+arguments.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Call function.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>scope</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Scope of execution.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line259">line 259</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">undefined</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="getMemberAt"><span class="type-signature"></span>getMemberAt<span class="signature">(index)</span><span class="type-signature"> &rarr; {<a href="rune.display.DisplayObject.html">rune.display.DisplayObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Retrieves a member object at a specific index. Note that the member index is 
+not necessarily the same as the object's child index in the display object 
+container.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>index</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">The index position of the member object.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line297">line 297</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+
+        
+
+<dl>
+    <dt>
+        <div class="param-desc">
+        Throws if the index does not exist in the member list.
+        </div>
+    </dt>
+    <dd></dd>
+    <dt>
+        <dl>
+            <dt>
+                Type
+            </dt>
+            <dd>
+                
+<span class="param-type">RangeError</span>
+
+
+            </dd>
+        </dl>
+    </dt>
+    <dd></dd>
+</dl>
+
+
+    
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    The member object at the specified index position.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="rune.display.DisplayObject.html">rune.display.DisplayObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="getMembers"><span class="type-signature"></span>getMembers<span class="signature">()</span><span class="type-signature"> &rarr; {Array.&lt;<a href="rune.display.DisplayObject.html">rune.display.DisplayObject</a>>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Retrieves the list of all members. This method is primarily intended for 
+internal use. Consider it read-only, as changes in the structure can cause 
+problems for the group.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line310">line 310</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;<a href="rune.display.DisplayObject.html">rune.display.DisplayObject</a>></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="getMembersCloseTo"><span class="type-signature"></span>getMembersCloseTo<span class="signature">(obj)</span><span class="type-signature"> &rarr; {Array.&lt;<a href="rune.display.DisplayObject.html">rune.display.DisplayObject</a>>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    If the useQuadtree property is set to true, only member objects that are in 
+close proximity to the argument object are returned; otherwise a list of all 
+members is returned.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="rune.display.DisplayObject.html">rune.display.DisplayObject</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Main object.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line323">line 323</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Array.&lt;<a href="rune.display.DisplayObject.html">rune.display.DisplayObject</a>></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="hasMember"><span class="type-signature"></span>hasMember<span class="signature">(prospect)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Returns whether an object is a member of the group (true) or not (false.)
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>prospect</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="rune.display.DisplayObject.html">rune.display.DisplayObject</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Main object.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line344">line 344</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="hitTest"><span class="type-signature"></span>hitTest<span class="signature">(obj, callback<span class="signature-attributes">opt</span>, scope<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Performs hit detection between an object and all members of the group. For 
+each hit, a callback method is also executed, which attaches the two objects 
+that collide as arguments to the method.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="rune.display.DisplayObject.html">rune.display.DisplayObject</a></span>
+|
+
+<span class="param-type"><a href="rune.display.DisplayGroup.html">rune.display.DisplayGroup</a></span>
+|
+
+<span class="param-type"><a href="rune.geom.Point.html">rune.geom.Point</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Object to test against.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Method that is called when a collision is detected.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>scope</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Scope of execution of the callback method.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line359">line 359</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Returns true if any hit was found, otherwise false.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="hitTestAndSeparate"><span class="type-signature"></span>hitTestAndSeparate<span class="signature">(obj, callback<span class="signature-attributes">opt</span>, scope<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Performs hit detection between an object and all members of the group. If a 
+hit is detected, the objects are separated according to their physical 
+properties. For each hit, a callback method is also executed, which attaches 
+the two objects that collide as arguments to the method.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="rune.display.DisplayObject.html">rune.display.DisplayObject</a></span>
+|
+
+<span class="param-type"><a href="rune.display.DisplayGroup.html">rune.display.DisplayGroup</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Object to test against.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Method that is called when a collision is detected.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>scope</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Scope of execution of the callback method.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line378">line 378</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    Returns true if any hit was found, otherwise false.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="hitTestAndSeparateGroup"><span class="type-signature"></span>hitTestAndSeparateGroup<span class="signature">(group, callback<span class="signature-attributes">opt</span>, scope<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Performs hit detection between members of this and another group. If a hit 
+is detected, the objects are separated based on their physical properties. 
+For each hit, a callback method is also executed, which attaches the two 
+objects that collide as arguments to the method.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>group</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="rune.display.DisplayGroup.html">rune.display.DisplayGroup</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Group to test against.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Method that is called when a collision is detected.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>scope</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Scope of execution of the callback method.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line396">line 396</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+<div class="param-desc">
+    True if there was a collision, otherwise false.
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="hitTestAndSeparateObject"><span class="type-signature"></span>hitTestAndSeparateObject<span class="signature">(obj, callback<span class="signature-attributes">opt</span>, scope<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Performs hit detection between members of this group and another display 
+object. If a hit is detected, the objects are separated based on their 
+physical properties. For each hit, a callback method is also executed, which 
+attaches the two objects that collide as arguments to the method.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="rune.display.DisplayObject.html">rune.display.DisplayObject</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Object to test against.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Method that is called when a collision is detected.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>scope</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Scope of execution of the callback method.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line427">line 427</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="hitTestGroup"><span class="type-signature"></span>hitTestGroup<span class="signature">(group, callback<span class="signature-attributes">opt</span>, scope<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Hit detect all members of the group against the members of (the same or) 
+another group.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>group</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="rune.display.DisplayGroup.html">rune.display.DisplayGroup</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The group to test against.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Method that is called when a collision is detected.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>scope</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Scope of execution of the callback method.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line450">line 450</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="hitTestObject"><span class="type-signature"></span>hitTestObject<span class="signature">(obj, callback<span class="signature-attributes">opt</span>, scope<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Hit detect all members of the group against another display object.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>obj</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="rune.display.DisplayObject.html">rune.display.DisplayObject</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">The display object to test against.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Method that is called when a collision is detected.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>scope</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Scope of execution of the callback method.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line478">line 478</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="hitTestPoint"><span class="type-signature"></span>hitTestPoint<span class="signature">(point, callback<span class="signature-attributes">opt</span>, scope<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Hit Detect all members of the group against a point. The method returns true 
+if the point overlaps one of the group members, otherwise false is returned.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>point</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="rune.geom.Point.html">rune.geom.Point</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Point to test against.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Method that is called when a collision is detected.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>scope</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">Scope of execution of the callback method.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line501">line 501</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="init"><span class="type-signature"></span>init<span class="signature">()</span><span class="type-signature"> &rarr; {undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    This method is automatically called once by the group manager when the group 
+is created, or added. The method is public but should be considered 
+internal. External calls should only be made if 1. The group is disabled, or 
+2. If the group is not added to a manager.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line571">line 571</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">undefined</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="postUpdate"><span class="type-signature"></span>postUpdate<span class="signature">(step)</span><span class="type-signature"> &rarr; {undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    This method is called automatically after the group's main update method is 
+completed. The method can be overridden and used to complete closing 
+processes just before the next update.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>step</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Current time step.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line610">line 610</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">undefined</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="preUpdate"><span class="type-signature"></span>preUpdate<span class="signature">(step)</span><span class="type-signature"> &rarr; {undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    This method is called just before the group's update method and performs 
+processes that must be completed before the group's main update process 
+begins. Avoid overriding and modifying this method.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>step</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Current time step.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line584">line 584</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">undefined</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="removeMember"><span class="type-signature"></span>removeMember<span class="signature">(member, dispose)</span><span class="type-signature"> &rarr; {<a href="rune.display.DisplayObject.html">rune.display.DisplayObject</a>}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Removes a member from the group. Note that the member will also be removed 
+from the display object's display list. It is not possible to be a member 
+of the group without being available in the container object's display list.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>member</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="rune.display.DisplayObject.html">rune.display.DisplayObject</a></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Member to be removed.</td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>dispose</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Whether the member should be destroyed when it is removed.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line527">line 527</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="rune.display.DisplayObject.html">rune.display.DisplayObject</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="removeMembers"><span class="type-signature"></span>removeMembers<span class="signature">(dispose)</span><span class="type-signature"> &rarr; {undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Removes all members from the group.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>dispose</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Whether the members should be destroyed when they are removed.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line553">line 553</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">undefined</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="update"><span class="type-signature"></span>update<span class="signature">(step)</span><span class="type-signature"> &rarr; {undefined}</span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    This method represents the group's main update process. The method can be 
+overridden in order to add custom logic.
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>step</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">number</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">Current time step.</td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="display_DisplayGroup.js.html">display/DisplayGroup.js</a>, <a href="display_DisplayGroup.js.html#line597">line 597</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">undefined</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="rune.html">rune</a></li><li><a href="rune.animation.html">animation</a></li><li><a href="rune.camera.html">camera</a></li><li><a href="rune.color.html">color</a></li><li><a href="rune.console.html">console</a></li><li><a href="rune.data.html">data</a></li><li><a href="rune.debug.html">debug</a></li><li><a href="rune.display.html">display</a></li><li><a href="rune.geom.html">geom</a></li><li><a href="rune.input.html">input</a></li><li><a href="rune.media.html">media</a></li><li><a href="rune.net.html">net</a></li><li><a href="rune.physics.html">physics</a></li><li><a href="rune.resource.html">resource</a></li><li><a href="rune.scene.html">scene</a></li><li><a href="rune.state.html">state</a></li><li><a href="rune.system.html">system</a></li><li><a href="rune.text.html">text</a></li><li><a href="rune.tilemap.html">tilemap</a></li><li><a href="rune.timer.html">timer</a></li><li><a href="rune.tween.html">tween</a></li><li><a href="rune.ui.html">ui</a></li><li><a href="rune.util.html">util</a></li></ul><h3>Classes</h3><ul><li><a href="rune.animation.Animation.html">Animation</a></li><li><a href="rune.animation.Animations.html">Animations</a></li><li><a href="rune.animation.AnimationScripts.html">AnimationScripts</a></li><li><a href="rune.camera.Camera.html">Camera</a></li><li><a href="rune.camera.CameraFade.html">CameraFade</a></li><li><a href="rune.camera.CameraFlash.html">CameraFlash</a></li><li><a href="rune.camera.Cameras.html">Cameras</a></li><li><a href="rune.camera.CameraShake.html">CameraShake</a></li><li><a href="rune.camera.CameraTargets.html">CameraTargets</a></li><li><a href="rune.camera.CameraTint.html">CameraTint</a></li><li><a href="rune.camera.CameraTintTween.html">CameraTintTween</a></li><li><a href="rune.camera.CameraViewport.html">CameraViewport</a></li><li><a href="rune.color.Color24.html">Color24</a></li><li><a href="rune.color.Color32.html">Color32</a></li><li><a href="rune.color.ColorComponent.html">ColorComponent</a></li><li><a href="rune.console.Console.html">Console</a></li><li><a href="rune.console.ConsoleCommand.html">ConsoleCommand</a></li><li><a href="rune.console.ConsoleCommands.html">ConsoleCommands</a></li><li><a href="rune.console.ConsoleCursor.html">ConsoleCursor</a></li><li><a href="rune.console.ConsoleHistory.html">ConsoleHistory</a></li><li><a href="rune.console.ConsoleInput.html">ConsoleInput</a></li><li><a href="rune.console.ConsoleManager.html">ConsoleManager</a></li><li><a href="rune.console.ConsoleOutput.html">ConsoleOutput</a></li><li><a href="rune.data.Highscores.html">Highscores</a></li><li><a href="rune.data.Loader.html">Loader</a></li><li><a href="rune.data.LoaderDebug.html">LoaderDebug</a></li><li><a href="rune.data.Logo.html">Logo</a></li><li><a href="rune.data.Requests.html">Requests</a></li><li><a href="rune.debug.Debugger.html">Debugger</a></li><li><a href="rune.debug.Framerate.html">Framerate</a></li><li><a href="rune.debug.Histogram.html">Histogram</a></li><li><a href="rune.debug.Master.html">Master</a></li><li><a href="rune.debug.Memory.html">Memory</a></li><li><a href="rune.debug.Music.html">Music</a></li><li><a href="rune.debug.Render.html">Render</a></li><li><a href="rune.debug.Sound.html">Sound</a></li><li><a href="rune.debug.Update.html">Update</a></li><li><a href="rune.display.Artboard.html">Artboard</a></li><li><a href="rune.display.Canvas.html">Canvas</a></li><li><a href="rune.display.DisplayGroup.html">DisplayGroup</a></li><li><a href="rune.display.DisplayGroups.html">DisplayGroups</a></li><li><a href="rune.display.DisplayObject.html">DisplayObject</a></li><li><a href="rune.display.DisplayObjectContainer.html">DisplayObjectContainer</a></li><li><a href="rune.display.Flicker.html">Flicker</a></li><li><a href="rune.display.Frame.html">Frame</a></li><li><a href="rune.display.Graphic.html">Graphic</a></li><li><a href="rune.display.Graphics.html">Graphics</a></li><li><a href="rune.display.Hitbox.html">Hitbox</a></li><li><a href="rune.display.InteractiveObject.html">InteractiveObject</a></li><li><a href="rune.display.Quadtree.html">Quadtree</a></li><li><a href="rune.display.Screen.html">Screen</a></li><li><a href="rune.display.Sprite.html">Sprite</a></li><li><a href="rune.display.Stage.html">Stage</a></li><li><a href="rune.display.Texture.html">Texture</a></li><li><a href="rune.geom.Point.html">Point</a></li><li><a href="rune.geom.Rectangle.html">Rectangle</a></li><li><a href="rune.geom.Vector2D.html">Vector2D</a></li><li><a href="rune.input.Gamepad.html">Gamepad</a></li><li><a href="rune.input.Gamepads.html">Gamepads</a></li><li><a href="rune.input.GamepadsOptions.html">GamepadsOptions</a></li><li><a href="rune.input.Inputs.html">Inputs</a></li><li><a href="rune.input.Keyboard.html">Keyboard</a></li><li><a href="rune.input.KeyboardKey.html">KeyboardKey</a></li><li><a href="rune.input.KeyboardOptions.html">KeyboardOptions</a></li><li><a href="rune.media.Sound.html">Sound</a></li><li><a href="rune.media.SoundChannel.html">SoundChannel</a></li><li><a href="rune.media.Sounds.html">Sounds</a></li><li><a href="rune.net.URLLoader.html">URLLoader</a></li><li><a href="rune.net.URLRequest.html">URLRequest</a></li><li><a href="rune.net.URLResponse.html">URLResponse</a></li><li><a href="rune.physics.Space.html">Space</a></li><li><a href="rune.physics.Velocity.html">Velocity</a></li><li><a href="rune.resource.Request.html">Request</a></li><li><a href="rune.resource.Requester.html">Requester</a></li><li><a href="rune.resource.RequesterOptions.html">RequesterOptions</a></li><li><a href="rune.resource.Requests.html">Requests</a></li><li><a href="rune.resource.Resource.html">Resource</a></li><li><a href="rune.resource.Resources.html">Resources</a></li><li><a href="rune.scene.Scene.html">Scene</a></li><li><a href="rune.scene.Scenes.html">Scenes</a></li><li><a href="rune.state.State.html">State</a></li><li><a href="rune.state.States.html">States</a></li><li><a href="rune.system.Application.html">Application</a></li><li><a href="rune.system.Config.html">Config</a></li><li><a href="rune.system.Time.html">Time</a></li><li><a href="rune.text.BitmapField.html">BitmapField</a></li><li><a href="rune.text.BitmapFormat.html">BitmapFormat</a></li><li><a href="rune.tilemap.Block.html">Block</a></li><li><a href="rune.tilemap.Tile.html">Tile</a></li><li><a href="rune.tilemap.Tilemap.html">Tilemap</a></li><li><a href="rune.tilemap.TilemapLayer.html">TilemapLayer</a></li><li><a href="rune.timer.Timer.html">Timer</a></li><li><a href="rune.timer.TimerOptions.html">TimerOptions</a></li><li><a href="rune.timer.Timers.html">Timers</a></li><li><a href="rune.tween.Sine.html">Sine</a></li><li><a href="rune.tween.Tween.html">Tween</a></li><li><a href="rune.tween.Tweens.html">Tweens</a></li><li><a href="rune.tween.TweenValue.html">TweenValue</a></li><li><a href="rune.ui.Counter.html">Counter</a></li><li><a href="rune.ui.CounterDigit.html">CounterDigit</a></li><li><a href="rune.ui.Progressbar.html">Progressbar</a></li><li><a href="rune.ui.VTList.html">VTList</a></li><li><a href="rune.ui.VTListElement.html">VTListElement</a></li><li><a href="rune.ui.VTMenu.html">VTMenu</a></li><li><a href="rune.ui.VTMenuPointer.html">VTMenuPointer</a></li><li><a href="rune.util.Executable.html">Executable</a></li><li><a href="rune.util.Filter.html">Filter</a></li><li><a href="rune.util.Math.html">Math</a></li><li><a href="rune.util.Palette.html">Palette</a></li><li><a href="rune.util.Path.html">Path</a></li><li><a href="rune.util.Paths.html">Paths</a></li><li><a href="rune.util.Stack.html">Stack</a></li><li><a href="rune.util.URL.html">URL</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Mon Feb 20 2023 14:40:20 GMT+0100 (Central European Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

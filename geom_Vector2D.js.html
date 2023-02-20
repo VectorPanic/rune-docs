@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: geom/Vector2D.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: geom/Vector2D.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>//------------------------------------------------------------------------------
+// Constructor scope
+//------------------------------------------------------------------------------
+
+/**
+ * Creates a new instance of the Vector2D class.
+ *
+ * @constructor
+ * @extends rune.geom.Point
+ *
+ * @param {number} [x=0.0] The x-component of the vector.
+ * @param {number} [y=0.0] The y-component of the vector.
+ * 
+ * @class
+ * @classdesc
+ * 
+ * The Vector2D class represents a generic two-dimensional vector. The class 
+ * provides some basic mathematical operations such as vector addition and 
+ * subtraction, and scalar multiplicaton. The class basically works as a Point 
+ * but with extra features.
+ */
+rune.geom.Vector2D = function(x, y) {
+
+	//--------------------------------------------------------------------------
+	// Super call
+	//--------------------------------------------------------------------------
+	
+	/**
+	 * Extend rune.geom.Point
+	 */
+	rune.geom.Point.call(this, x, y);
+};
+
+//------------------------------------------------------------------------------
+// Inheritance
+//------------------------------------------------------------------------------
+
+rune.geom.Vector2D.prototype = Object.create(rune.geom.Point.prototype);
+rune.geom.Vector2D.prototype.constructor = rune.geom.Vector2D;
+
+//------------------------------------------------------------------------------
+// Private static properties
+//------------------------------------------------------------------------------
+
+/**
+ * Lookup table for precision rounding.
+ *
+ * @type {Array.&lt;number>}
+ * @private
+ */
+rune.geom.Vector2D.PRECISION = [
+    1,
+    10,
+    100,
+    1000,
+    10000,
+    100000,
+    1000000,
+    10000000,
+    100000000,
+    1000000000,
+    10000000000
+];
+
+//------------------------------------------------------------------------------
+// Override public prototype methods (API)
+//------------------------------------------------------------------------------
+
+/**
+ * @inheritDoc
+ */
+rune.geom.Vector2D.prototype.toString = function() {
+	return "[{Vector2D (x=" + this.x + " y=" + this.y + ")}]";
+};
+
+//------------------------------------------------------------------------------
+// Public prototype methods
+//------------------------------------------------------------------------------
+
+/**
+ * Set the vector axes values to absolute values.
+ *
+ * @returns {rune.geom.Vector2D}
+ */
+rune.geom.Vector2D.prototype.abs = function() {
+    this['x'] = Math.abs(this['x']);
+    this['y'] = Math.abs(this['y']);
+    
+    return this;
+};
+
+/**
+ * Adds the argument vector to this vector.
+ *
+ * @param {rune.geom.Vector2D} vector The second vector.
+ *
+ * @returns {rune.geom.Vector2D}
+ */
+rune.geom.Vector2D.prototype.add = function(vector) {
+	this['x'] += vector['x'];
+	this['y'] += vector['y'];
+
+	return this;
+};
+
+/**
+ * Returns the cross product of this vector by another.
+ *
+ * @param {rune.geom.Vector2D} vector The second vector.
+ *
+ * @returns {number}
+ */
+rune.geom.Vector2D.prototype.cross = function(vector) {
+    return this['x'] * vector['y'] - this['y'] * vector['x'];
+};
+
+/**
+ * Divides this vector by another vector, or by a number specified as a 
+ * floating point number.
+ *
+ * @param {rune.geom.Vector2D|number} value The value to divide by.
+ *
+ * @returns {rune.geom.Vector2D}
+ */
+rune.geom.Vector2D.prototype.divide = function(value) {
+    //@note: This violates object-oriented typing rules but it results in a cleaner interface.
+    if (value instanceof rune.geom.Vector2D) {
+        this['x'] /= value['x'];
+        this['y'] /= value['y'];
+    } else {
+        this['x'] /= value;
+        this['y'] /= value;
+    }
+    
+    return this;
+};
+
+/**
+ * Returns the dot product of this vector by another.
+ *
+ * @param {rune.geom.Vector2D} vector The second vector.
+ *
+ * @returns {number}
+ */
+rune.geom.Vector2D.prototype.dot = function(vector) {
+    return vector['x'] * this['x'] + vector['y'] * this['y'];
+};
+
+/**
+ * Determine if the specified vector is equal to the current vector.
+ *
+ * @param {rune.geom.Vector2D} vector The second vector.
+ *
+ * @returns {boolean}
+ */
+rune.geom.Vector2D.prototype.equals = function(vector) {
+    return vector['x'] === this['x'] &amp;&amp; vector['y'] === this['y'];
+};
+
+/**
+ * Returns the magnitude (length) of this vector.
+ *
+ * @param {boolean} [squared] Request squared magnitude.
+ *
+ * @returns {number}
+ */
+rune.geom.Vector2D.prototype.magnitude = function(squared) {
+    var x = this['x'];
+    var y = this['y'];
+    
+    var v = x * x + y * y;
+    
+    return (squared === true) ? v : Math.sqrt(v);
+};
+
+/**
+ * Multiplies this vector by another vector, or by a number specified as a 
+ * floating point number.
+ *
+ * @param {rune.geom.Vector2D|number} value The value to multiply by.
+ *
+ * @returns {rune.geom.Vector2D}
+ */
+rune.geom.Vector2D.prototype.multiply = function(value) {
+    //@note: This violates object-oriented typing rules but it results in a cleaner interface.
+    if (value instanceof rune.geom.Vector2D) {
+        this['x'] *= value['x'];
+        this['y'] *= value['y'];
+    } else {
+        this['x'] *= value;
+        this['y'] *= value;
+    }
+    
+    return this;
+};
+
+/**
+ * Scales the line segment between (0,0) and the current vector to a set length.
+ *
+ * @param {number} [scale] The scaling value.
+ *
+ * @returns {rune.geom.Vector2D}
+ */
+rune.geom.Vector2D.prototype.normalize = function(scale) {
+    return this.divide(scale || this.magnitude());
+};
+
+/**
+ * Reverses this vector i.e multiplies it by -1.
+ *
+ * @returns {rune.geom.Vector2D}
+ */
+rune.geom.Vector2D.prototype.reverse = function() {
+    this['x'] = -this['x'];
+    this['y'] = -this['y'];
+    
+    return this;
+};
+
+/**
+ * Rotates the vector with specified radians.
+ *
+ * @param {number} rads Amount of rotation specified in radians.
+ *
+ * @returns {rune.geom.Vector2D}
+ */
+rune.geom.Vector2D.prototype.rotate = function(rads) {
+    var cos = Math.cos(rads);
+    var sin = Math.sin(rads);
+    
+    var ox = this.x;
+    var oy = this.y;
+    
+    this['x'] = ox * cos - oy * sin;
+    this['y'] = ox * sin + oy * cos;
+    
+    return this;
+};
+
+/**
+ * Rotates the vector by provided radians.
+ *
+ * @param {number} n Number of decimals for precision.
+ *
+ * @returns {rune.geom.Vector2D}
+ */
+rune.geom.Vector2D.prototype.round = function(n) {
+    var p = rune.geom.Vector2D.PRECISION[n || 2];
+    
+    this['x'] = ((0.5 + this.x * p) &lt;&lt; 0) / p;
+    this['y'] = ((0.5 + this.y * p) &lt;&lt; 0) / p;
+    
+    return this;
+};
+
+/**
+ * Subtracts the argument vector from this vector.
+ *
+ * @param {rune.geom.Vector2D} vector The second vector.
+ *
+ * @returns {rune.geom.Vector2D}
+ */
+rune.geom.Vector2D.prototype.subtract = function(vector) {
+    this['x'] -= vector['x'];
+    this['y'] -= vector['y'];
+    
+    return this;
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="rune.html">rune</a></li><li><a href="rune.animation.html">animation</a></li><li><a href="rune.camera.html">camera</a></li><li><a href="rune.color.html">color</a></li><li><a href="rune.console.html">console</a></li><li><a href="rune.data.html">data</a></li><li><a href="rune.debug.html">debug</a></li><li><a href="rune.display.html">display</a></li><li><a href="rune.geom.html">geom</a></li><li><a href="rune.input.html">input</a></li><li><a href="rune.media.html">media</a></li><li><a href="rune.net.html">net</a></li><li><a href="rune.physics.html">physics</a></li><li><a href="rune.resource.html">resource</a></li><li><a href="rune.scene.html">scene</a></li><li><a href="rune.state.html">state</a></li><li><a href="rune.system.html">system</a></li><li><a href="rune.text.html">text</a></li><li><a href="rune.tilemap.html">tilemap</a></li><li><a href="rune.timer.html">timer</a></li><li><a href="rune.tween.html">tween</a></li><li><a href="rune.ui.html">ui</a></li><li><a href="rune.util.html">util</a></li></ul><h3>Classes</h3><ul><li><a href="rune.animation.Animation.html">Animation</a></li><li><a href="rune.animation.Animations.html">Animations</a></li><li><a href="rune.animation.AnimationScripts.html">AnimationScripts</a></li><li><a href="rune.camera.Camera.html">Camera</a></li><li><a href="rune.camera.CameraFade.html">CameraFade</a></li><li><a href="rune.camera.CameraFlash.html">CameraFlash</a></li><li><a href="rune.camera.Cameras.html">Cameras</a></li><li><a href="rune.camera.CameraShake.html">CameraShake</a></li><li><a href="rune.camera.CameraTargets.html">CameraTargets</a></li><li><a href="rune.camera.CameraTint.html">CameraTint</a></li><li><a href="rune.camera.CameraTintTween.html">CameraTintTween</a></li><li><a href="rune.camera.CameraViewport.html">CameraViewport</a></li><li><a href="rune.color.Color24.html">Color24</a></li><li><a href="rune.color.Color32.html">Color32</a></li><li><a href="rune.color.ColorComponent.html">ColorComponent</a></li><li><a href="rune.console.Console.html">Console</a></li><li><a href="rune.console.ConsoleCommand.html">ConsoleCommand</a></li><li><a href="rune.console.ConsoleCommands.html">ConsoleCommands</a></li><li><a href="rune.console.ConsoleCursor.html">ConsoleCursor</a></li><li><a href="rune.console.ConsoleHistory.html">ConsoleHistory</a></li><li><a href="rune.console.ConsoleInput.html">ConsoleInput</a></li><li><a href="rune.console.ConsoleManager.html">ConsoleManager</a></li><li><a href="rune.console.ConsoleOutput.html">ConsoleOutput</a></li><li><a href="rune.data.Highscores.html">Highscores</a></li><li><a href="rune.data.Loader.html">Loader</a></li><li><a href="rune.data.LoaderDebug.html">LoaderDebug</a></li><li><a href="rune.data.Logo.html">Logo</a></li><li><a href="rune.data.Requests.html">Requests</a></li><li><a href="rune.debug.Debugger.html">Debugger</a></li><li><a href="rune.debug.Framerate.html">Framerate</a></li><li><a href="rune.debug.Histogram.html">Histogram</a></li><li><a href="rune.debug.Master.html">Master</a></li><li><a href="rune.debug.Memory.html">Memory</a></li><li><a href="rune.debug.Music.html">Music</a></li><li><a href="rune.debug.Render.html">Render</a></li><li><a href="rune.debug.Sound.html">Sound</a></li><li><a href="rune.debug.Update.html">Update</a></li><li><a href="rune.display.Artboard.html">Artboard</a></li><li><a href="rune.display.Canvas.html">Canvas</a></li><li><a href="rune.display.DisplayGroup.html">DisplayGroup</a></li><li><a href="rune.display.DisplayGroups.html">DisplayGroups</a></li><li><a href="rune.display.DisplayObject.html">DisplayObject</a></li><li><a href="rune.display.DisplayObjectContainer.html">DisplayObjectContainer</a></li><li><a href="rune.display.Flicker.html">Flicker</a></li><li><a href="rune.display.Frame.html">Frame</a></li><li><a href="rune.display.Graphic.html">Graphic</a></li><li><a href="rune.display.Graphics.html">Graphics</a></li><li><a href="rune.display.Hitbox.html">Hitbox</a></li><li><a href="rune.display.InteractiveObject.html">InteractiveObject</a></li><li><a href="rune.display.Quadtree.html">Quadtree</a></li><li><a href="rune.display.Screen.html">Screen</a></li><li><a href="rune.display.Sprite.html">Sprite</a></li><li><a href="rune.display.Stage.html">Stage</a></li><li><a href="rune.display.Texture.html">Texture</a></li><li><a href="rune.geom.Point.html">Point</a></li><li><a href="rune.geom.Rectangle.html">Rectangle</a></li><li><a href="rune.geom.Vector2D.html">Vector2D</a></li><li><a href="rune.input.Gamepad.html">Gamepad</a></li><li><a href="rune.input.Gamepads.html">Gamepads</a></li><li><a href="rune.input.GamepadsOptions.html">GamepadsOptions</a></li><li><a href="rune.input.Inputs.html">Inputs</a></li><li><a href="rune.input.Keyboard.html">Keyboard</a></li><li><a href="rune.input.KeyboardKey.html">KeyboardKey</a></li><li><a href="rune.input.KeyboardOptions.html">KeyboardOptions</a></li><li><a href="rune.media.Sound.html">Sound</a></li><li><a href="rune.media.SoundChannel.html">SoundChannel</a></li><li><a href="rune.media.Sounds.html">Sounds</a></li><li><a href="rune.net.URLLoader.html">URLLoader</a></li><li><a href="rune.net.URLRequest.html">URLRequest</a></li><li><a href="rune.net.URLResponse.html">URLResponse</a></li><li><a href="rune.physics.Space.html">Space</a></li><li><a href="rune.physics.Velocity.html">Velocity</a></li><li><a href="rune.resource.Request.html">Request</a></li><li><a href="rune.resource.Requester.html">Requester</a></li><li><a href="rune.resource.RequesterOptions.html">RequesterOptions</a></li><li><a href="rune.resource.Requests.html">Requests</a></li><li><a href="rune.resource.Resource.html">Resource</a></li><li><a href="rune.resource.Resources.html">Resources</a></li><li><a href="rune.scene.Scene.html">Scene</a></li><li><a href="rune.scene.Scenes.html">Scenes</a></li><li><a href="rune.state.State.html">State</a></li><li><a href="rune.state.States.html">States</a></li><li><a href="rune.system.Application.html">Application</a></li><li><a href="rune.system.Config.html">Config</a></li><li><a href="rune.system.Time.html">Time</a></li><li><a href="rune.text.BitmapField.html">BitmapField</a></li><li><a href="rune.text.BitmapFormat.html">BitmapFormat</a></li><li><a href="rune.tilemap.Block.html">Block</a></li><li><a href="rune.tilemap.Tile.html">Tile</a></li><li><a href="rune.tilemap.Tilemap.html">Tilemap</a></li><li><a href="rune.tilemap.TilemapLayer.html">TilemapLayer</a></li><li><a href="rune.timer.Timer.html">Timer</a></li><li><a href="rune.timer.TimerOptions.html">TimerOptions</a></li><li><a href="rune.timer.Timers.html">Timers</a></li><li><a href="rune.tween.Sine.html">Sine</a></li><li><a href="rune.tween.Tween.html">Tween</a></li><li><a href="rune.tween.Tweens.html">Tweens</a></li><li><a href="rune.tween.TweenValue.html">TweenValue</a></li><li><a href="rune.ui.Counter.html">Counter</a></li><li><a href="rune.ui.CounterDigit.html">CounterDigit</a></li><li><a href="rune.ui.Progressbar.html">Progressbar</a></li><li><a href="rune.ui.VTList.html">VTList</a></li><li><a href="rune.ui.VTListElement.html">VTListElement</a></li><li><a href="rune.ui.VTMenu.html">VTMenu</a></li><li><a href="rune.ui.VTMenuPointer.html">VTMenuPointer</a></li><li><a href="rune.util.Executable.html">Executable</a></li><li><a href="rune.util.Filter.html">Filter</a></li><li><a href="rune.util.Math.html">Math</a></li><li><a href="rune.util.Palette.html">Palette</a></li><li><a href="rune.util.Path.html">Path</a></li><li><a href="rune.util.Paths.html">Paths</a></li><li><a href="rune.util.Stack.html">Stack</a></li><li><a href="rune.util.URL.html">URL</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Mon Feb 20 2023 14:40:19 GMT+0100 (Central European Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

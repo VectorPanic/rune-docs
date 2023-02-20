@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: debug/Debugger.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: debug/Debugger.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>//------------------------------------------------------------------------------
+// Constructor scope
+//------------------------------------------------------------------------------
+
+/**
+ * Creates a new instance of the Debugger class.
+ *
+ * @constructor
+ * @extends rune.display.DisplayObjectContainer
+ *
+ * @param {number} [width=0.0] Debugger width in pixels.
+ * @param {number} [height=0.0] Debugger height in pixels.
+ *
+ * @class
+ * @classdesc
+ * 
+ * The Debugger class represents a tool for visualizing debug data; such as 
+ * frame rate, rendering and update time, and the use of audio channels.
+ */
+rune.debug.Debugger = function(width, height) {
+    
+    //--------------------------------------------------------------------------
+    // Private properties
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Visualizes framerate.
+     *
+     * @type {rune.debug.Framerate}
+     * @private
+     */
+    this.m_framerate = null;
+    
+    /**
+     * Visualizes framerate over time.
+     *
+     * @type {rune.debug.Histogram}
+     * @private
+     */
+    this.m_histogram = null;
+    
+    /**
+     * Describes how many sounds are registered to the master channel.
+     *
+     * @type {rune.debug.Master}
+     * @private
+     */
+    this.m_master = null;
+    
+    /**
+     * Visualizes memory consumption.
+     *
+     * @type {rune.debug.Memory}
+     * @private
+     */
+    this.m_memory = null;
+    
+    /**
+     * Describes how many sounds are registered to the music channel.
+     *
+     * @type {rune.debug.Music}
+     * @private
+     */
+    this.m_music = null;
+    
+    /**
+     * Visualizes rendering time.
+     *
+     * @type {rune.debug.Render}
+     * @private
+     */
+    this.m_render = null;
+    
+    /**
+     * Visualizes update time.
+     *
+     * @type {rune.debug.Update}
+     * @private
+     */
+    this.m_update = null;
+    
+    /**
+     * Describes how many sounds are registered to the sound channel.
+     *
+     * @type {rune.debug.Sound}
+     * @private
+     */
+    this.m_sound = null;
+    
+    //--------------------------------------------------------------------------
+    // Super call
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Extend DisplayObjectContainer
+     */
+    rune.display.DisplayObjectContainer.call(this, 0, 0, width, height);
+};
+
+//------------------------------------------------------------------------------
+// Inheritance
+//------------------------------------------------------------------------------
+
+rune.debug.Debugger.prototype = Object.create(rune.display.DisplayObjectContainer.prototype);
+rune.debug.Debugger.prototype.constructor = rune.debug.Debugger;
+
+//------------------------------------------------------------------------------
+// Private static constants
+//------------------------------------------------------------------------------
+
+/**
+ * Key used to enable and disable the debugger.
+ *
+ * @const {string}
+ * @private
+ */
+rune.debug.Debugger.TOGGLE_KEY = "D";
+
+//------------------------------------------------------------------------------
+// Override public prototype methods (ENGINE)
+//------------------------------------------------------------------------------
+
+/**
+ * @inheritDoc
+ */
+rune.debug.Debugger.prototype.update = function(step) {
+    rune.display.DisplayObjectContainer.prototype.update.call(this, step);
+    this.m_updateInput();
+};
+
+/**
+ * @inheritDoc
+ */
+rune.debug.Debugger.prototype.dispose = function() {
+    this.m_disposeMemory();
+    this.m_disposeRender();
+    this.m_disposeUpdate();
+    this.m_disposeHistogram();
+    this.m_disposeFramerate();
+    rune.display.DisplayObjectContainer.prototype.dispose.call(this);
+};
+
+//------------------------------------------------------------------------------
+// Override protected prototype methods
+//------------------------------------------------------------------------------
+
+/**
+ * @inheritDoc
+ */
+rune.debug.Debugger.prototype.m_construct = function() {
+    rune.display.DisplayObjectContainer.prototype.m_construct.call(this);
+    this.m_constructFramerate();
+    this.m_constructHistogram();
+    this.m_constructUpdate();
+    this.m_constructRender();
+    this.m_constructMemory();
+    this.m_constructSound();
+    this.m_constructMusic();
+    this.m_constructMaster();
+};
+
+//------------------------------------------------------------------------------
+// Private prototype methods
+//------------------------------------------------------------------------------
+
+/**
+ * Creates the object for calculating and visualizing the frame rate.
+ *
+ * @throws {Error} If the object already exists.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.debug.Debugger.prototype.m_constructFramerate = function() {
+    this.m_disposeFramerate();
+    if (this.m_framerate == null) {
+        this.m_framerate = new rune.debug.Framerate();
+        this.addChild(this.m_framerate);
+    } else throw new Error();
+};
+
+/**
+ * Creates histograms that visualize framerate over time.
+ *
+ * @throws {Error} If the object already exists.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.debug.Debugger.prototype.m_constructHistogram = function() {
+    this.m_disposeHistogram();
+    if (this.m_histogram == null) {
+        this.m_histogram = new rune.debug.Histogram(28, 0, 40, 10);
+        this.addChild(this.m_histogram);
+    } else throw new Error();
+};
+
+/**
+ * Creates an object to visualize update time.
+ *
+ * @throws {Error} If the object already exists.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.debug.Debugger.prototype.m_constructUpdate = function() {
+    this.m_disposeUpdate();
+    if (this.m_update == null) {
+        this.m_update = new rune.debug.Update();
+        this.m_update.x = 72;
+        this.addChild(this.m_update);
+    } else throw new Error();
+};
+
+/**
+ * Creates an object to visualize rendering time.
+ *
+ * @throws {Error} If the object already exists.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.debug.Debugger.prototype.m_constructRender = function() {
+    this.m_disposeRender();
+    if (this.m_render == null) {
+        this.m_render = new rune.debug.Render();
+        this.m_render.x = 100;
+        this.addChild(this.m_render);
+    } else throw new Error();
+};
+
+/**
+ * Creates an object to visualize memory consumption.
+ *
+ * @throws {Error} If the object already exists.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.debug.Debugger.prototype.m_constructMemory = function() {
+    this.m_disposeMemory();
+    if (this.m_memory == null) {
+        this.m_memory = new rune.debug.Memory();
+        this.m_memory.x = 128;
+        this.addChild(this.m_memory);
+    } else throw new Error();
+};
+
+/**
+ * Creates the object that represents the debug data for the sound channel.
+ *
+ * @throws {Error} If the object already exists.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.debug.Debugger.prototype.m_constructSound = function() {
+    this.m_disposeSound();
+    if (this.m_sound == null) {
+        this.m_sound = new rune.debug.Sound();
+        this.m_sound.x = 186;
+        this.addChild(this.m_sound);
+    } else throw new Error();
+};
+
+/**
+ * Creates the object that represents the debug data for the music channel.
+ *
+ * @throws {Error} If the object already exists.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.debug.Debugger.prototype.m_constructMusic = function() {
+    this.m_disposeMusic();
+    if (this.m_music == null) {
+        this.m_music = new rune.debug.Music();
+        this.m_music.x = 214;
+        this.addChild(this.m_music);
+    } else throw new Error();
+};
+
+/**
+ * Creates the object that represents the debug data for the master channel.
+ *
+ * @throws {Error} If the object already exists.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.debug.Debugger.prototype.m_constructMaster = function() {
+    this.m_disposeMaster();
+    if (this.m_master == null) {
+        this.m_master = new rune.debug.Master();
+        this.m_master.x = 242;
+        this.addChild(this.m_master);
+    } else throw new Error();
+};
+
+/**
+ * Listens for keyboard input to show and hide debug data.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.debug.Debugger.prototype.m_updateInput = function() {
+    if (this['keyboard'].pressed("SHIFT")) {
+        if (this['keyboard'].justPressed(rune.debug.Debugger.TOGGLE_KEY)) {
+            this['visible'] = !this['visible'];
+        }
+    }
+};
+
+/**
+ * Removes the object that represents the debug data for the master channel.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.debug.Debugger.prototype.m_disposeMaster = function() {
+    if (this.m_master != null) {
+        if (this.m_master['parent']) {
+            this.m_master['parent'].removeChild(this.m_master, true);
+        }
+        
+        this.m_master = null;
+    }
+};
+
+/**
+ * Removes the object that represents the debug data for the music channel.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.debug.Debugger.prototype.m_disposeMusic = function() {
+    if (this.m_music != null) {
+        if (this.m_music['parent']) {
+            this.m_music['parent'].removeChild(this.m_music, true);
+        }
+        
+        this.m_music = null;
+    }
+};
+
+/**
+ * Removes the object that represents the debug data for the sound channel.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.debug.Debugger.prototype.m_disposeSound = function() {
+    if (this.m_sound != null) {
+        if (this.m_sound['parent']) {
+            this.m_sound['parent'].removeChild(this.m_sound, true);
+        }
+        
+        this.m_sound = null;
+    }
+};
+
+/**
+ * Removes objects and frees up memory.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.debug.Debugger.prototype.m_disposeMemory = function() {
+    if (this.m_memory != null) {
+        if (this.m_memory['parent']) {
+            this.m_memory['parent'].removeChild(this.m_memory, true);
+        }
+        
+        this.m_memory = null;
+    }
+};
+
+/**
+ * Removes objects and frees up memory.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.debug.Debugger.prototype.m_disposeRender = function() {
+    if (this.m_render != null) {
+        if (this.m_render['parent']) {
+            this.m_render['parent'].removeChild(this.m_render, true);
+        }
+        
+        this.m_render = null;
+    }
+};
+
+/**
+ * Removes objects and frees up memory.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.debug.Debugger.prototype.m_disposeUpdate = function() {
+    if (this.m_update != null) {
+        if (this.m_update['parent']) {
+            this.m_update['parent'].removeChild(this.m_update, true);
+        }
+        
+        this.m_update = null;
+    }
+};
+
+/**
+ * Removes objects and frees up memory.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.debug.Debugger.prototype.m_disposeHistogram = function() {
+    if (this.m_histogram != null) {
+        if (this.m_histogram['parent']) {
+            this.m_histogram['parent'].removeChild(this.m_histogram, true);
+        }
+        
+        this.m_histogram = null;
+    }
+};
+
+/**
+ * Removes objects and frees up memory.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.debug.Debugger.prototype.m_disposeFramerate = function() {
+    if (this.m_framerate != null) {
+        if (this.m_framerate['parent']) {
+            this.m_framerate['parent'].removeChild(this.m_framerate, true);
+        }
+        
+        this.m_framerate = null;
+    }
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="rune.html">rune</a></li><li><a href="rune.animation.html">animation</a></li><li><a href="rune.camera.html">camera</a></li><li><a href="rune.color.html">color</a></li><li><a href="rune.console.html">console</a></li><li><a href="rune.data.html">data</a></li><li><a href="rune.debug.html">debug</a></li><li><a href="rune.display.html">display</a></li><li><a href="rune.geom.html">geom</a></li><li><a href="rune.input.html">input</a></li><li><a href="rune.media.html">media</a></li><li><a href="rune.net.html">net</a></li><li><a href="rune.physics.html">physics</a></li><li><a href="rune.resource.html">resource</a></li><li><a href="rune.scene.html">scene</a></li><li><a href="rune.state.html">state</a></li><li><a href="rune.system.html">system</a></li><li><a href="rune.text.html">text</a></li><li><a href="rune.tilemap.html">tilemap</a></li><li><a href="rune.timer.html">timer</a></li><li><a href="rune.tween.html">tween</a></li><li><a href="rune.ui.html">ui</a></li><li><a href="rune.util.html">util</a></li></ul><h3>Classes</h3><ul><li><a href="rune.animation.Animation.html">Animation</a></li><li><a href="rune.animation.Animations.html">Animations</a></li><li><a href="rune.animation.AnimationScripts.html">AnimationScripts</a></li><li><a href="rune.camera.Camera.html">Camera</a></li><li><a href="rune.camera.CameraFade.html">CameraFade</a></li><li><a href="rune.camera.CameraFlash.html">CameraFlash</a></li><li><a href="rune.camera.Cameras.html">Cameras</a></li><li><a href="rune.camera.CameraShake.html">CameraShake</a></li><li><a href="rune.camera.CameraTargets.html">CameraTargets</a></li><li><a href="rune.camera.CameraTint.html">CameraTint</a></li><li><a href="rune.camera.CameraTintTween.html">CameraTintTween</a></li><li><a href="rune.camera.CameraViewport.html">CameraViewport</a></li><li><a href="rune.color.Color24.html">Color24</a></li><li><a href="rune.color.Color32.html">Color32</a></li><li><a href="rune.color.ColorComponent.html">ColorComponent</a></li><li><a href="rune.console.Console.html">Console</a></li><li><a href="rune.console.ConsoleCommand.html">ConsoleCommand</a></li><li><a href="rune.console.ConsoleCommands.html">ConsoleCommands</a></li><li><a href="rune.console.ConsoleCursor.html">ConsoleCursor</a></li><li><a href="rune.console.ConsoleHistory.html">ConsoleHistory</a></li><li><a href="rune.console.ConsoleInput.html">ConsoleInput</a></li><li><a href="rune.console.ConsoleManager.html">ConsoleManager</a></li><li><a href="rune.console.ConsoleOutput.html">ConsoleOutput</a></li><li><a href="rune.data.Highscores.html">Highscores</a></li><li><a href="rune.data.Loader.html">Loader</a></li><li><a href="rune.data.LoaderDebug.html">LoaderDebug</a></li><li><a href="rune.data.Logo.html">Logo</a></li><li><a href="rune.data.Requests.html">Requests</a></li><li><a href="rune.debug.Debugger.html">Debugger</a></li><li><a href="rune.debug.Framerate.html">Framerate</a></li><li><a href="rune.debug.Histogram.html">Histogram</a></li><li><a href="rune.debug.Master.html">Master</a></li><li><a href="rune.debug.Memory.html">Memory</a></li><li><a href="rune.debug.Music.html">Music</a></li><li><a href="rune.debug.Render.html">Render</a></li><li><a href="rune.debug.Sound.html">Sound</a></li><li><a href="rune.debug.Update.html">Update</a></li><li><a href="rune.display.Artboard.html">Artboard</a></li><li><a href="rune.display.Canvas.html">Canvas</a></li><li><a href="rune.display.DisplayGroup.html">DisplayGroup</a></li><li><a href="rune.display.DisplayGroups.html">DisplayGroups</a></li><li><a href="rune.display.DisplayObject.html">DisplayObject</a></li><li><a href="rune.display.DisplayObjectContainer.html">DisplayObjectContainer</a></li><li><a href="rune.display.Flicker.html">Flicker</a></li><li><a href="rune.display.Frame.html">Frame</a></li><li><a href="rune.display.Graphic.html">Graphic</a></li><li><a href="rune.display.Graphics.html">Graphics</a></li><li><a href="rune.display.Hitbox.html">Hitbox</a></li><li><a href="rune.display.InteractiveObject.html">InteractiveObject</a></li><li><a href="rune.display.Quadtree.html">Quadtree</a></li><li><a href="rune.display.Screen.html">Screen</a></li><li><a href="rune.display.Sprite.html">Sprite</a></li><li><a href="rune.display.Stage.html">Stage</a></li><li><a href="rune.display.Texture.html">Texture</a></li><li><a href="rune.geom.Point.html">Point</a></li><li><a href="rune.geom.Rectangle.html">Rectangle</a></li><li><a href="rune.geom.Vector2D.html">Vector2D</a></li><li><a href="rune.input.Gamepad.html">Gamepad</a></li><li><a href="rune.input.Gamepads.html">Gamepads</a></li><li><a href="rune.input.GamepadsOptions.html">GamepadsOptions</a></li><li><a href="rune.input.Inputs.html">Inputs</a></li><li><a href="rune.input.Keyboard.html">Keyboard</a></li><li><a href="rune.input.KeyboardKey.html">KeyboardKey</a></li><li><a href="rune.input.KeyboardOptions.html">KeyboardOptions</a></li><li><a href="rune.media.Sound.html">Sound</a></li><li><a href="rune.media.SoundChannel.html">SoundChannel</a></li><li><a href="rune.media.Sounds.html">Sounds</a></li><li><a href="rune.net.URLLoader.html">URLLoader</a></li><li><a href="rune.net.URLRequest.html">URLRequest</a></li><li><a href="rune.net.URLResponse.html">URLResponse</a></li><li><a href="rune.physics.Space.html">Space</a></li><li><a href="rune.physics.Velocity.html">Velocity</a></li><li><a href="rune.resource.Request.html">Request</a></li><li><a href="rune.resource.Requester.html">Requester</a></li><li><a href="rune.resource.RequesterOptions.html">RequesterOptions</a></li><li><a href="rune.resource.Requests.html">Requests</a></li><li><a href="rune.resource.Resource.html">Resource</a></li><li><a href="rune.resource.Resources.html">Resources</a></li><li><a href="rune.scene.Scene.html">Scene</a></li><li><a href="rune.scene.Scenes.html">Scenes</a></li><li><a href="rune.state.State.html">State</a></li><li><a href="rune.state.States.html">States</a></li><li><a href="rune.system.Application.html">Application</a></li><li><a href="rune.system.Config.html">Config</a></li><li><a href="rune.system.Time.html">Time</a></li><li><a href="rune.text.BitmapField.html">BitmapField</a></li><li><a href="rune.text.BitmapFormat.html">BitmapFormat</a></li><li><a href="rune.tilemap.Block.html">Block</a></li><li><a href="rune.tilemap.Tile.html">Tile</a></li><li><a href="rune.tilemap.Tilemap.html">Tilemap</a></li><li><a href="rune.tilemap.TilemapLayer.html">TilemapLayer</a></li><li><a href="rune.timer.Timer.html">Timer</a></li><li><a href="rune.timer.TimerOptions.html">TimerOptions</a></li><li><a href="rune.timer.Timers.html">Timers</a></li><li><a href="rune.tween.Sine.html">Sine</a></li><li><a href="rune.tween.Tween.html">Tween</a></li><li><a href="rune.tween.Tweens.html">Tweens</a></li><li><a href="rune.tween.TweenValue.html">TweenValue</a></li><li><a href="rune.ui.Counter.html">Counter</a></li><li><a href="rune.ui.CounterDigit.html">CounterDigit</a></li><li><a href="rune.ui.Progressbar.html">Progressbar</a></li><li><a href="rune.ui.VTList.html">VTList</a></li><li><a href="rune.ui.VTListElement.html">VTListElement</a></li><li><a href="rune.ui.VTMenu.html">VTMenu</a></li><li><a href="rune.ui.VTMenuPointer.html">VTMenuPointer</a></li><li><a href="rune.util.Executable.html">Executable</a></li><li><a href="rune.util.Filter.html">Filter</a></li><li><a href="rune.util.Math.html">Math</a></li><li><a href="rune.util.Palette.html">Palette</a></li><li><a href="rune.util.Path.html">Path</a></li><li><a href="rune.util.Paths.html">Paths</a></li><li><a href="rune.util.Stack.html">Stack</a></li><li><a href="rune.util.URL.html">URL</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Mon Feb 20 2023 14:40:19 GMT+0100 (Central European Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: data/scene/Loader.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: data/scene/Loader.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>//------------------------------------------------------------------------------
+// Constructor scope
+//------------------------------------------------------------------------------
+
+/**
+ * Creates a new instance of the Loader class.
+ *
+ * @constructor
+ * @extends rune.scene.Scene
+ *
+ * @param {rune.system.Config} options
+ *
+ * @class
+ * @classdesc
+ * 
+ * The Loader class is a Scene that loads and encodes the resource files used 
+ * by the current application. The class is used by Rune to ensure that all the 
+ * necessary resources are available in the resource library before the 
+ * application logic begins.
+ */
+rune.data.Loader = function(options) {
+
+    //--------------------------------------------------------------------------
+    // Private properties
+    //--------------------------------------------------------------------------
+    
+    /**
+     * The primary (and only) camera.
+     *
+     * @type {rune.camera.Camera}
+     * @private
+     */
+    this.m_camera = null;
+    
+    /**
+     * Logo graphics.
+     *
+     * @type {rune.display.Graphic}
+     * @private
+     */
+    this.m_logo = null;
+    
+    /**
+     * The stage consists of two stages; load resources and fade-in / -out 
+     * transitions. When both are completed, the next scene is activated.
+     *
+     * @type {number}
+     * @private
+     */
+    this.m_numStepCompleted = 0;
+
+    /**
+     * An instance of the Config class.
+     *
+     * @type {rune.system.Config}
+     * @private
+     */
+    this.m_options = options;
+    
+    /**
+     * The progress bar.
+     *
+     * @type {Object}
+     * @private
+     */
+    this.m_progressbar = null;
+    
+    /**
+     * Boot sound.
+     *
+     * @type {rune.media.Sound}
+     * @private
+     */
+    this.m_sound = null;
+
+    //--------------------------------------------------------------------------
+    // Super call
+    //--------------------------------------------------------------------------
+    
+    /**
+     * Extend Scene.
+     */
+    rune.scene.Scene.call(this);
+};
+
+//------------------------------------------------------------------------------
+// Inheritance
+//------------------------------------------------------------------------------
+
+rune.data.Loader.prototype = Object.create(rune.scene.Scene.prototype);
+rune.data.Loader.prototype.constructor = rune.data.Loader;
+
+//------------------------------------------------------------------------------
+// Private static constants
+//------------------------------------------------------------------------------
+
+/**
+ * Start and stop delay.
+ *
+ * @constant {number}
+ * @private
+ */
+rune.data.Loader.DELAY_DURATION = 1000;
+
+/**
+ * The length of the fade effects.
+ *
+ * @constant {number}
+ * @private
+ */
+rune.data.Loader.FADE_DURATION = 2500;
+
+//------------------------------------------------------------------------------
+// Override public prototype methods (ENGINE)
+//------------------------------------------------------------------------------
+
+/**
+ * @inheritDoc
+ */
+rune.data.Loader.prototype.init = function() {
+    rune.scene.Scene.prototype.init.call(this);
+    this.m_initLogo();
+    this.m_initProgressbar();
+    this.m_initSound();
+};
+
+/**
+ * @inheritDoc
+ */
+rune.data.Loader.prototype.dispose = function() {
+    this.m_disposeSound();
+    this.m_disposeProgressbar();
+    this.m_disposeLogo();
+    rune.scene.Scene.prototype.dispose.call(this);
+};
+
+//------------------------------------------------------------------------------
+// Override protected prototype methods
+//------------------------------------------------------------------------------
+
+/**
+ * @inheritDoc
+ */
+rune.data.Loader.prototype.m_initCamera = function() {
+    rune.scene.Scene.prototype.m_initCamera.call(this);
+    this.m_camera = this['cameras'].getCameraAt(0);
+    this.m_camera['fade']['opacity'] = 1.0;
+    this['timers'].create({
+        duration: rune.data.Loader.DELAY_DURATION,
+        onComplete: this.m_fadeIn,
+        scope: this
+    });
+};
+
+//------------------------------------------------------------------------------
+// Private prototype methods
+//------------------------------------------------------------------------------
+
+/**
+ * Creates the logo.
+ *
+ * @throws {Error} If a logo already exists.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.data.Loader.prototype.m_initLogo = function() {
+    this.m_disposeLogo();
+    if (this.m_logo == null) {
+        this.m_logo = new rune.data.Logo();
+        
+        if (this['application']['screen']['width']  >= 1280 &amp;&amp; 
+            this['application']['screen']['height'] >= 720) {
+            this.m_logo.scaleX = 2.0;
+            this.m_logo.scaleY = 2.0;
+        }
+        
+        this.m_logo["center"] = this["application"]["screen"]["center"];
+        this["stage"].addChild(this.m_logo);
+        
+    } else throw new Error();
+};
+
+/**
+ * Creates the progress bar.
+ *
+ * @throws {Error} If a progress bar already exists.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.data.Loader.prototype.m_initProgressbar = function() {
+    this.m_disposeProgressbar();
+    if (this.m_progressbar == null) {
+        this.m_progressbar = new rune.ui.Progressbar(
+            this["application"]["screen"]["width"],
+            1
+        );
+        
+        if (this['application']['screen']['width']  >= 1280 &amp;&amp; 
+            this['application']['screen']['height'] >= 720) {
+            this.m_progressbar.scaleX = 2.0;
+            this.m_progressbar.scaleY = 2.0;
+        }
+        
+        this.m_progressbar.bottom = this["application"]["screen"]["height"];
+        this.m_progressbar.progress = 0.0;
+        this.m_camera.addChild(this.m_progressbar);
+    } else throw new Error();
+};
+
+/**
+ * Creates the Sound object used to play the startup sound.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.data.Loader.prototype.m_initSound = function() {
+    this.m_disposeSound();
+    if (this.m_sound == null) {
+        this.m_sound = this['application']['sounds']['sound'].get("rune_sound_startup");
+    }
+};
+
+/**
+ * Removes the Sound object used to play the startup sound.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.data.Loader.prototype.m_disposeSound = function() {
+    if (this.m_sound != null) {
+        this.m_sound.dispose();
+        this.m_sound = null;
+    }
+};
+
+/**
+ * Removes the progress bar.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.data.Loader.prototype.m_disposeProgressbar = function() {
+    if (this.m_progressbar != null) {
+        this.m_progressbar.parent.removeChild(this.m_progressbar, true);
+        this.m_progressbar = null;
+    }
+};
+
+/**
+ * Removes the logo.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.data.Loader.prototype.m_disposeLogo = function() {
+    if (this.m_logo != null) {
+        this.m_logo['parent'].removeChild(this.m_logo, true);
+        this.m_logo = null;
+    }
+};
+
+/**
+ * Fade in.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.data.Loader.prototype.m_fadeIn = function() {
+    if (this.m_camera instanceof rune.camera.Camera) {
+        this.m_camera['fade'].in(
+            rune.data.Loader.FADE_DURATION,
+            this.m_onFadeInComplete,
+            this
+        );
+    }
+    
+    this.m_sound.play();
+};
+
+/**
+ * Called when the camera fade-in effect is completed.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.data.Loader.prototype.m_onFadeInComplete = function() {
+    this.m_loadResources();
+    this['timers'].create({
+        duration: rune.data.Loader.DELAY_DURATION,
+        scope: this,
+        onComplete: function() {
+            if (++this.m_numStepCompleted === 2) {
+                this.m_fadeOut();
+            }
+        }
+    });
+};
+
+/**
+ * Loads application resources to the resource library.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.data.Loader.prototype.m_loadResources = function() {
+    var Batch = this.m_options.resources || rune.resource.Requests;
+    this['application']['resources'].request({
+        batch: new Batch(),
+        onComplete: this.m_onLoadComplete,
+        onProgress: this.m_onResourcesProgress,
+        scope: this
+    });
+};
+
+/**
+ * Called on two occasions: 1. When all resources have been loaded. 2. When 
+ * the delay time has expired.
+ *
+ * @returns {undefined}
+ * @private
+ */
+rune.data.Loader.prototype.m_onLoadComplete = function() {
+    if (++this.m_numStepCompleted === 2) {
+        this.m_fadeOut();
+    }
+};
+
+/**
+ * Called when a requested resource has been successfully loaded by the 
+ * application.
+ *
+ * @param {number} progress Indicates the progress of the loading process.
+ * @param {string} name The name of the loaded resource.
+ * @param {number} size The size of the loaded resource (in bytes).
+ * @param {string} type The loaded resource MIME type.
+ * @param {Object} resource The loaded resource (in encoded format).
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.data.Loader.prototype.m_onResourcesProgress = function(progress, name, size, type, resource) {
+    if (this.m_progressbar != null) {
+        this.m_progressbar.progress = progress;
+    }
+};
+
+/**
+ * Fade out.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.data.Loader.prototype.m_fadeOut = function() {
+    if (this.m_camera instanceof rune.camera.Camera) {
+        this.m_camera['fade'].out(
+            rune.data.Loader.FADE_DURATION,
+            this.m_onFadeOutComplete,
+            this
+        );
+        
+        if (this.m_progressbar != null) {
+            this.m_progressbar.progress = 1.0;
+        }
+    }
+};
+
+/**
+ * Called when the camera fade-out effect is completed.
+ *
+ * @return {undefined}
+ * @private
+ */
+rune.data.Loader.prototype.m_onFadeOutComplete = function() {
+    var scenes = (this.m_options.scene != null) ? [new this.m_options.scene()] : [new rune.scene.Scene()];
+    this['application']['scenes'].load(scenes);
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="rune.html">rune</a></li><li><a href="rune.animation.html">animation</a></li><li><a href="rune.camera.html">camera</a></li><li><a href="rune.color.html">color</a></li><li><a href="rune.console.html">console</a></li><li><a href="rune.data.html">data</a></li><li><a href="rune.debug.html">debug</a></li><li><a href="rune.display.html">display</a></li><li><a href="rune.geom.html">geom</a></li><li><a href="rune.input.html">input</a></li><li><a href="rune.media.html">media</a></li><li><a href="rune.net.html">net</a></li><li><a href="rune.physics.html">physics</a></li><li><a href="rune.resource.html">resource</a></li><li><a href="rune.scene.html">scene</a></li><li><a href="rune.state.html">state</a></li><li><a href="rune.system.html">system</a></li><li><a href="rune.text.html">text</a></li><li><a href="rune.tilemap.html">tilemap</a></li><li><a href="rune.timer.html">timer</a></li><li><a href="rune.tween.html">tween</a></li><li><a href="rune.ui.html">ui</a></li><li><a href="rune.util.html">util</a></li></ul><h3>Classes</h3><ul><li><a href="rune.animation.Animation.html">Animation</a></li><li><a href="rune.animation.Animations.html">Animations</a></li><li><a href="rune.animation.AnimationScripts.html">AnimationScripts</a></li><li><a href="rune.camera.Camera.html">Camera</a></li><li><a href="rune.camera.CameraFade.html">CameraFade</a></li><li><a href="rune.camera.CameraFlash.html">CameraFlash</a></li><li><a href="rune.camera.Cameras.html">Cameras</a></li><li><a href="rune.camera.CameraShake.html">CameraShake</a></li><li><a href="rune.camera.CameraTargets.html">CameraTargets</a></li><li><a href="rune.camera.CameraTint.html">CameraTint</a></li><li><a href="rune.camera.CameraTintTween.html">CameraTintTween</a></li><li><a href="rune.camera.CameraViewport.html">CameraViewport</a></li><li><a href="rune.color.Color24.html">Color24</a></li><li><a href="rune.color.Color32.html">Color32</a></li><li><a href="rune.color.ColorComponent.html">ColorComponent</a></li><li><a href="rune.console.Console.html">Console</a></li><li><a href="rune.console.ConsoleCommand.html">ConsoleCommand</a></li><li><a href="rune.console.ConsoleCommands.html">ConsoleCommands</a></li><li><a href="rune.console.ConsoleCursor.html">ConsoleCursor</a></li><li><a href="rune.console.ConsoleHistory.html">ConsoleHistory</a></li><li><a href="rune.console.ConsoleInput.html">ConsoleInput</a></li><li><a href="rune.console.ConsoleManager.html">ConsoleManager</a></li><li><a href="rune.console.ConsoleOutput.html">ConsoleOutput</a></li><li><a href="rune.data.Highscores.html">Highscores</a></li><li><a href="rune.data.Loader.html">Loader</a></li><li><a href="rune.data.LoaderDebug.html">LoaderDebug</a></li><li><a href="rune.data.Logo.html">Logo</a></li><li><a href="rune.data.Requests.html">Requests</a></li><li><a href="rune.debug.Debugger.html">Debugger</a></li><li><a href="rune.debug.Framerate.html">Framerate</a></li><li><a href="rune.debug.Histogram.html">Histogram</a></li><li><a href="rune.debug.Master.html">Master</a></li><li><a href="rune.debug.Memory.html">Memory</a></li><li><a href="rune.debug.Music.html">Music</a></li><li><a href="rune.debug.Render.html">Render</a></li><li><a href="rune.debug.Sound.html">Sound</a></li><li><a href="rune.debug.Update.html">Update</a></li><li><a href="rune.display.Artboard.html">Artboard</a></li><li><a href="rune.display.Canvas.html">Canvas</a></li><li><a href="rune.display.DisplayGroup.html">DisplayGroup</a></li><li><a href="rune.display.DisplayGroups.html">DisplayGroups</a></li><li><a href="rune.display.DisplayObject.html">DisplayObject</a></li><li><a href="rune.display.DisplayObjectContainer.html">DisplayObjectContainer</a></li><li><a href="rune.display.Flicker.html">Flicker</a></li><li><a href="rune.display.Frame.html">Frame</a></li><li><a href="rune.display.Graphic.html">Graphic</a></li><li><a href="rune.display.Graphics.html">Graphics</a></li><li><a href="rune.display.Hitbox.html">Hitbox</a></li><li><a href="rune.display.InteractiveObject.html">InteractiveObject</a></li><li><a href="rune.display.Quadtree.html">Quadtree</a></li><li><a href="rune.display.Screen.html">Screen</a></li><li><a href="rune.display.Sprite.html">Sprite</a></li><li><a href="rune.display.Stage.html">Stage</a></li><li><a href="rune.display.Texture.html">Texture</a></li><li><a href="rune.geom.Point.html">Point</a></li><li><a href="rune.geom.Rectangle.html">Rectangle</a></li><li><a href="rune.geom.Vector2D.html">Vector2D</a></li><li><a href="rune.input.Gamepad.html">Gamepad</a></li><li><a href="rune.input.Gamepads.html">Gamepads</a></li><li><a href="rune.input.GamepadsOptions.html">GamepadsOptions</a></li><li><a href="rune.input.Inputs.html">Inputs</a></li><li><a href="rune.input.Keyboard.html">Keyboard</a></li><li><a href="rune.input.KeyboardKey.html">KeyboardKey</a></li><li><a href="rune.input.KeyboardOptions.html">KeyboardOptions</a></li><li><a href="rune.media.Sound.html">Sound</a></li><li><a href="rune.media.SoundChannel.html">SoundChannel</a></li><li><a href="rune.media.Sounds.html">Sounds</a></li><li><a href="rune.net.URLLoader.html">URLLoader</a></li><li><a href="rune.net.URLRequest.html">URLRequest</a></li><li><a href="rune.net.URLResponse.html">URLResponse</a></li><li><a href="rune.physics.Space.html">Space</a></li><li><a href="rune.physics.Velocity.html">Velocity</a></li><li><a href="rune.resource.Request.html">Request</a></li><li><a href="rune.resource.Requester.html">Requester</a></li><li><a href="rune.resource.RequesterOptions.html">RequesterOptions</a></li><li><a href="rune.resource.Requests.html">Requests</a></li><li><a href="rune.resource.Resource.html">Resource</a></li><li><a href="rune.resource.Resources.html">Resources</a></li><li><a href="rune.scene.Scene.html">Scene</a></li><li><a href="rune.scene.Scenes.html">Scenes</a></li><li><a href="rune.state.State.html">State</a></li><li><a href="rune.state.States.html">States</a></li><li><a href="rune.system.Application.html">Application</a></li><li><a href="rune.system.Config.html">Config</a></li><li><a href="rune.system.Time.html">Time</a></li><li><a href="rune.text.BitmapField.html">BitmapField</a></li><li><a href="rune.text.BitmapFormat.html">BitmapFormat</a></li><li><a href="rune.tilemap.Block.html">Block</a></li><li><a href="rune.tilemap.Tile.html">Tile</a></li><li><a href="rune.tilemap.Tilemap.html">Tilemap</a></li><li><a href="rune.tilemap.TilemapLayer.html">TilemapLayer</a></li><li><a href="rune.timer.Timer.html">Timer</a></li><li><a href="rune.timer.TimerOptions.html">TimerOptions</a></li><li><a href="rune.timer.Timers.html">Timers</a></li><li><a href="rune.tween.Sine.html">Sine</a></li><li><a href="rune.tween.Tween.html">Tween</a></li><li><a href="rune.tween.Tweens.html">Tweens</a></li><li><a href="rune.tween.TweenValue.html">TweenValue</a></li><li><a href="rune.ui.Counter.html">Counter</a></li><li><a href="rune.ui.CounterDigit.html">CounterDigit</a></li><li><a href="rune.ui.Progressbar.html">Progressbar</a></li><li><a href="rune.ui.VTList.html">VTList</a></li><li><a href="rune.ui.VTListElement.html">VTListElement</a></li><li><a href="rune.ui.VTMenu.html">VTMenu</a></li><li><a href="rune.ui.VTMenuPointer.html">VTMenuPointer</a></li><li><a href="rune.util.Executable.html">Executable</a></li><li><a href="rune.util.Filter.html">Filter</a></li><li><a href="rune.util.Math.html">Math</a></li><li><a href="rune.util.Palette.html">Palette</a></li><li><a href="rune.util.Path.html">Path</a></li><li><a href="rune.util.Paths.html">Paths</a></li><li><a href="rune.util.Stack.html">Stack</a></li><li><a href="rune.util.URL.html">URL</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Mon Feb 20 2023 14:40:19 GMT+0100 (Central European Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

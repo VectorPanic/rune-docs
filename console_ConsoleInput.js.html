@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: console/ConsoleInput.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: console/ConsoleInput.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>//------------------------------------------------------------------------------
+// Constructor scope
+//------------------------------------------------------------------------------
+
+/**
+ * Creates a new instance of the ConsoleInput class.
+ *
+ * @constructor
+ * @package
+ *
+ * @param {rune.console.Console} console Reference to the console to which the object is connected.
+ *
+ * @class
+ * @classdesc
+ * 
+ * The ConsoleInput class represents an input field for a text console.
+ */
+rune.console.ConsoleInput = function(console) {
+	
+	//--------------------------------------------------------------------------
+	// Public properties
+	//--------------------------------------------------------------------------
+	
+	/**
+	 * Whether or not the input field receives input from keyboard events.
+	 *
+	 * @type {boolean}
+	 */
+	this.enabled = true;
+	
+	//--------------------------------------------------------------------------
+	// Private properties
+	//--------------------------------------------------------------------------
+	
+	/**
+	 * The Console object to which the input field belongs.
+	 *
+	 * @type {rune.console.Console}
+	 * @private
+	 */
+	this.m_console = console;
+	
+	/**
+	 * Represents the text cursor.
+	 *
+	 * @type {rune.console.ConsoleCursor}
+	 * @private
+	 */
+	this.m_cursor = null;
+	
+	/**
+	 * Input prefix.
+	 *
+	 * @type {string}
+	 * @private
+	 */
+	this.m_cursorPrefix = "> ";
+	
+	/**
+	 * Represents input history.
+	 *
+	 * @type {rune.console.ConsoleHistory}
+	 * @private
+	 */
+	this.m_history = null;
+	
+	/**
+	 * Current input string.
+	 *
+	 * @type {string}
+	 * @private
+	 */
+	this.m_input = "";
+	
+	/**
+	 * Callback handle for "keydown" events.
+	 *
+	 * @type {Function}
+	 * @private
+	 */
+	this.m_onKeyDownHandler = null;
+	
+	//--------------------------------------------------------------------------
+	// Constructor call
+	//--------------------------------------------------------------------------
+
+	/**
+	 * Invokes secondary class constructor.
+	 */
+	this.m_construct();
+};
+
+//------------------------------------------------------------------------------
+// Private static constants
+//------------------------------------------------------------------------------
+
+/**
+ * The key code of "enter".
+ *
+ * @const {number}
+ * @private
+ */
+rune.console.ConsoleInput.KEYBOARD_RETURN = 13;
+
+/**
+ * The key code of "backspace".
+ *
+ * @const {number}
+ * @private
+ */
+rune.console.ConsoleInput.KEYBOARD_BACKSPACE = 8;
+
+/**
+ * The key code of "up arrow".
+ *
+ * @const {number}
+ * @private
+ */
+rune.console.ConsoleInput.KEYBOARD_UP = 38;
+
+/**
+ * The key code of "down arrow".
+ *
+ * @const {number}
+ * @private
+ */
+rune.console.ConsoleInput.KEYBOARD_DOWN = 40;
+
+/**
+ * The key code of "grave accent".
+ *
+ * @const {number}
+ * @private
+ */
+rune.console.ConsoleInput.KEYBOARD_TILDE = 192;
+
+/**
+ * The key code of "shift".
+ *
+ * @const {number}
+ * @private
+ */
+rune.console.ConsoleInput.KEYBOARD_SHIFT = 16;
+
+//------------------------------------------------------------------------------
+// Public prototype methods (API)
+//------------------------------------------------------------------------------
+
+/**
+ * Adds a character to the input field.
+ *
+ * @param {string} chr The character to add.
+ *
+ * @returns {undefined}
+ * @suppress {accessControls}
+ */
+rune.console.ConsoleInput.prototype.add = function(chr) {
+	this.m_input += chr || "";
+	this.m_console.breakCache();
+};
+
+/**
+ * Clears the contents of the input field.
+ *
+ * @returns {undefined}
+ * @suppress {accessControls}
+ */
+rune.console.ConsoleInput.prototype.clear = function() {
+	this.m_input = "";
+	this.m_console.breakCache();
+};
+
+//------------------------------------------------------------------------------
+// Public prototype methods (ENGINE)
+//------------------------------------------------------------------------------
+
+/**
+ * Updates the input field.
+ *
+ * @param {number} step Current time step.
+ *
+ * @returns {undefined}
+ * @ignore
+ */
+rune.console.ConsoleInput.prototype.update = function(step) {
+	this.m_updateCursor(step);
+};
+
+/**
+ * Renders the input field.
+ *
+ * @returns {undefined}
+ * @ignore
+ */
+rune.console.ConsoleInput.prototype.render = function() {
+	this.m_renderString(this.m_cursorPrefix + this.m_input + this.m_cursor.text);
+};
+
+/**
+ * Removes and frees memory allocated by the input field.
+ *
+ * @returns {undefined}
+ * @ignore
+ */
+rune.console.ConsoleInput.prototype.dispose = function() {
+	this.m_disposeHistory();
+	this.m_disposeCursor();
+	this.m_disposeEvent();
+};
+
+//------------------------------------------------------------------------------
+// Protected prototype methods
+//------------------------------------------------------------------------------
+
+/**
+ * The class constructor.
+ *
+ * @returns {undefined}
+ * @protected
+ * @ignore
+ */
+rune.console.ConsoleInput.prototype.m_construct = function() {
+	this.m_constructEvent();
+	this.m_constructCursor();
+	this.m_constructHistory();
+};
+
+//------------------------------------------------------------------------------
+// Private prototype methods
+//------------------------------------------------------------------------------
+
+/**
+ * Creates event handler for "keydown" events.
+ *
+ * @returns {undefined}
+ * @private
+ */
+rune.console.ConsoleInput.prototype.m_constructEvent = function() {
+	this.m_disposeEvent();
+	var m_this = this;
+	if (this.m_onKeyDownHandler == null) {
+		window.addEventListener(
+			"keydown",
+			this.m_onKeyDownHandler = function(event) {
+				m_this.m_onKeyDown(event);
+			}
+		);
+	} else throw new Error();
+};
+
+/**
+ * Creates the text cursor.
+ *
+ * @returns {undefined}
+ * @private
+ */
+rune.console.ConsoleInput.prototype.m_constructCursor = function() {
+	this.m_disposeCursor();
+	if (this.m_cursor == null) {
+		this.m_cursor = new rune.console.ConsoleCursor();
+	} else throw new Error();
+};
+
+/**
+ * Creates the input history subsystem.
+ *
+ * @returns {undefined}
+ * @private
+ */
+rune.console.ConsoleInput.prototype.m_constructHistory = function() {
+	this.m_disposeHistory();
+	if (this.m_history == null) {
+		this.m_history = new rune.console.ConsoleHistory();
+	} else throw new Error();
+};
+
+/**
+ * Updates the text cursor.
+ *
+ * @param {number} step Current time step.
+ *
+ * @returns {undefined}
+ * @private
+ * @suppress {accessControls}
+ */
+rune.console.ConsoleInput.prototype.m_updateCursor = function(step) {
+	if (this.m_cursor != null) {
+		if (this.m_cursor.update(step)) {
+			this.m_console.breakCache();
+		}
+	}
+};
+
+/**
+ * Renders a string to the input field.
+ *
+ * @param {string} str String to render.
+ *
+ * @returns {undefined}
+ * @private
+ */
+rune.console.ConsoleInput.prototype.m_renderString = function(str) {
+	var x = this.m_console['indentation'];
+	var y = this.m_console['unscaledHeight'] - this.m_console['format']['charHeight'];
+
+	for (var i = 0; i &lt; str.length; i++) {
+		this.m_renderCharacter(
+			str.charCodeAt(i),
+			x,
+			y
+		);
+		
+		x += this.m_console['format']['charWidth'];
+	}
+};
+
+/**
+ * Renders a character to the input field.
+ *
+ * @param {number} chr The character code for the character to render.
+ * @param {number} x The x position of the character.
+ * @param {number} y The y position of the character.
+ *
+ * @returns {undefined}
+ * @private
+ */
+rune.console.ConsoleInput.prototype.m_renderCharacter = function(chr, x, y) {
+	var rect = this.m_console['format'].getCharRect(chr);
+	if (rect != null) {
+		this.m_console['canvas'].drawImage(
+			this.m_console['format']['texture'],
+			x,
+			y,
+			rect.width,
+			rect.height,
+			rect.x, 
+			rect.y,
+			rect.width,
+			rect.height
+		);
+	}
+};
+
+/**
+ * Removes the input history subsystem.
+ *
+ * @returns {undefined}
+ * @private
+ */
+rune.console.ConsoleInput.prototype.m_disposeHistory = function() {
+	if (this.m_history instanceof rune.console.ConsoleHistory) {
+		this.m_history.dispose();
+		this.m_history = null;
+	}
+};
+
+/**
+ * Removes the text cursor.
+ *
+ * @returns {undefined}
+ * @private
+ */
+rune.console.ConsoleInput.prototype.m_disposeCursor = function() {
+	if (this.m_cursor instanceof rune.console.ConsoleCursor) {
+		this.m_cursor.dispose();
+		this.m_cursor = null;
+	}
+};
+
+/**
+ * Removes event listeners who listen for "keydown" events.
+ *
+ * @returns {undefined}
+ * @private
+ */
+rune.console.ConsoleInput.prototype.m_disposeEvent = function() {
+	if (typeof this.m_onKeyDownHandler === "function") {
+		window.removeEventListener(
+			"keydown",
+			this.m_onKeyDownHandler
+		);
+	}
+};
+
+/**
+ * Automatically called when a key is pressed.
+ *
+ * @param {Event} event Keyboard event.
+ *
+ * @returns {undefined}
+ * @private
+ */
+rune.console.ConsoleInput.prototype.m_onKeyDown = function(event) {
+	if (this.enabled == true &amp;&amp; this.m_console['enabled'] == true) {
+		this.m_commandSwitch(event);
+	}
+};
+
+/**
+ * Handles how to handle a character entry.
+ *
+ * @param {Event} event Keyboard event.
+ *
+ * @returns {undefined}
+ * @private
+ */
+rune.console.ConsoleInput.prototype.m_commandSwitch = function(event) {
+	switch (event.keyCode) {
+		case rune.console.ConsoleInput.KEYBOARD_RETURN:
+			this.m_executeCommand();
+			break;
+			
+		case rune.console.ConsoleInput.KEYBOARD_BACKSPACE:
+			this.m_removeFromInput();
+			break;
+			
+		case rune.console.ConsoleInput.KEYBOARD_UP:
+			this.m_previousInput();
+			break;
+			
+		case rune.console.ConsoleInput.KEYBOARD_DOWN:
+			this.m_nextInput();
+			break;
+			
+		case rune.console.ConsoleInput.KEYBOARD_TILDE:
+			break;
+			
+		case rune.console.ConsoleInput.KEYBOARD_SHIFT:
+			break;
+			
+		default:
+			this.m_addToInput(event);
+			break;
+	}
+};
+	
+/**
+ * Executes entered command.
+ *
+ * @returns {undefined}
+ * @private
+ */
+rune.console.ConsoleInput.prototype.m_executeCommand = function() {
+	this.m_onInput(this.m_input);
+	this.m_history.add(this.m_input);
+	this.clear();
+};
+
+/**
+ * Executes the command of a text string.
+ *
+ * @param {string} input Input string.
+ *
+ * @returns {undefined}
+ * @private
+ */
+rune.console.ConsoleInput.prototype.m_onInput = function(input) {
+	if (this.m_console != null) {
+		this.m_console.execute(input);
+	}
+};
+
+/**
+ * Adds a character to the input string.
+ *
+ * @param {Event} event Keyboard event.
+ *
+ * @returns {undefined}
+ * @private
+ */
+rune.console.ConsoleInput.prototype.m_addToInput = function(event) {
+	this.m_cursor.reset();
+	var chr = (event.key != null &amp;&amp; event.key.length === 1) ? event.key : String.fromCharCode(event.which || event.keyCode);
+	this.add(chr);
+};
+
+/**
+ * Retrieves the next input string from the history.
+ *
+ * @returns {undefined}
+ * @private
+ */
+rune.console.ConsoleInput.prototype.m_nextInput = function() {
+	this.clear();
+	this.m_input = this.m_history.next() || "";
+};
+
+/**
+ * Retrieves the previous input string from the history.
+ *
+ * @returns {undefined}
+ * @private
+ */
+rune.console.ConsoleInput.prototype.m_previousInput = function() {
+	this.clear();
+	this.m_input = this.m_history.previous() || "";
+};
+
+/**
+ * Deletes the last character in the input string.
+ *
+ * @returns {undefined}
+ * @private
+ * @suppress {accessControls}
+ */
+rune.console.ConsoleInput.prototype.m_removeFromInput = function() {
+	this.m_cursor.reset();
+	this.m_input = this.m_input.substring(0, this.m_input.length - 1);
+	this.m_console.breakCache();
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Namespaces</h3><ul><li><a href="rune.html">rune</a></li><li><a href="rune.animation.html">animation</a></li><li><a href="rune.camera.html">camera</a></li><li><a href="rune.color.html">color</a></li><li><a href="rune.console.html">console</a></li><li><a href="rune.data.html">data</a></li><li><a href="rune.debug.html">debug</a></li><li><a href="rune.display.html">display</a></li><li><a href="rune.geom.html">geom</a></li><li><a href="rune.input.html">input</a></li><li><a href="rune.media.html">media</a></li><li><a href="rune.net.html">net</a></li><li><a href="rune.physics.html">physics</a></li><li><a href="rune.resource.html">resource</a></li><li><a href="rune.scene.html">scene</a></li><li><a href="rune.state.html">state</a></li><li><a href="rune.system.html">system</a></li><li><a href="rune.text.html">text</a></li><li><a href="rune.tilemap.html">tilemap</a></li><li><a href="rune.timer.html">timer</a></li><li><a href="rune.tween.html">tween</a></li><li><a href="rune.ui.html">ui</a></li><li><a href="rune.util.html">util</a></li></ul><h3>Classes</h3><ul><li><a href="rune.animation.Animation.html">Animation</a></li><li><a href="rune.animation.Animations.html">Animations</a></li><li><a href="rune.animation.AnimationScripts.html">AnimationScripts</a></li><li><a href="rune.camera.Camera.html">Camera</a></li><li><a href="rune.camera.CameraFade.html">CameraFade</a></li><li><a href="rune.camera.CameraFlash.html">CameraFlash</a></li><li><a href="rune.camera.Cameras.html">Cameras</a></li><li><a href="rune.camera.CameraShake.html">CameraShake</a></li><li><a href="rune.camera.CameraTargets.html">CameraTargets</a></li><li><a href="rune.camera.CameraTint.html">CameraTint</a></li><li><a href="rune.camera.CameraTintTween.html">CameraTintTween</a></li><li><a href="rune.camera.CameraViewport.html">CameraViewport</a></li><li><a href="rune.color.Color24.html">Color24</a></li><li><a href="rune.color.Color32.html">Color32</a></li><li><a href="rune.color.ColorComponent.html">ColorComponent</a></li><li><a href="rune.console.Console.html">Console</a></li><li><a href="rune.console.ConsoleCommand.html">ConsoleCommand</a></li><li><a href="rune.console.ConsoleCommands.html">ConsoleCommands</a></li><li><a href="rune.console.ConsoleCursor.html">ConsoleCursor</a></li><li><a href="rune.console.ConsoleHistory.html">ConsoleHistory</a></li><li><a href="rune.console.ConsoleInput.html">ConsoleInput</a></li><li><a href="rune.console.ConsoleManager.html">ConsoleManager</a></li><li><a href="rune.console.ConsoleOutput.html">ConsoleOutput</a></li><li><a href="rune.data.Highscores.html">Highscores</a></li><li><a href="rune.data.Loader.html">Loader</a></li><li><a href="rune.data.LoaderDebug.html">LoaderDebug</a></li><li><a href="rune.data.Logo.html">Logo</a></li><li><a href="rune.data.Requests.html">Requests</a></li><li><a href="rune.debug.Debugger.html">Debugger</a></li><li><a href="rune.debug.Framerate.html">Framerate</a></li><li><a href="rune.debug.Histogram.html">Histogram</a></li><li><a href="rune.debug.Master.html">Master</a></li><li><a href="rune.debug.Memory.html">Memory</a></li><li><a href="rune.debug.Music.html">Music</a></li><li><a href="rune.debug.Render.html">Render</a></li><li><a href="rune.debug.Sound.html">Sound</a></li><li><a href="rune.debug.Update.html">Update</a></li><li><a href="rune.display.Artboard.html">Artboard</a></li><li><a href="rune.display.Canvas.html">Canvas</a></li><li><a href="rune.display.DisplayGroup.html">DisplayGroup</a></li><li><a href="rune.display.DisplayGroups.html">DisplayGroups</a></li><li><a href="rune.display.DisplayObject.html">DisplayObject</a></li><li><a href="rune.display.DisplayObjectContainer.html">DisplayObjectContainer</a></li><li><a href="rune.display.Flicker.html">Flicker</a></li><li><a href="rune.display.Frame.html">Frame</a></li><li><a href="rune.display.Graphic.html">Graphic</a></li><li><a href="rune.display.Graphics.html">Graphics</a></li><li><a href="rune.display.Hitbox.html">Hitbox</a></li><li><a href="rune.display.InteractiveObject.html">InteractiveObject</a></li><li><a href="rune.display.Quadtree.html">Quadtree</a></li><li><a href="rune.display.Screen.html">Screen</a></li><li><a href="rune.display.Sprite.html">Sprite</a></li><li><a href="rune.display.Stage.html">Stage</a></li><li><a href="rune.display.Texture.html">Texture</a></li><li><a href="rune.geom.Point.html">Point</a></li><li><a href="rune.geom.Rectangle.html">Rectangle</a></li><li><a href="rune.geom.Vector2D.html">Vector2D</a></li><li><a href="rune.input.Gamepad.html">Gamepad</a></li><li><a href="rune.input.Gamepads.html">Gamepads</a></li><li><a href="rune.input.GamepadsOptions.html">GamepadsOptions</a></li><li><a href="rune.input.Inputs.html">Inputs</a></li><li><a href="rune.input.Keyboard.html">Keyboard</a></li><li><a href="rune.input.KeyboardKey.html">KeyboardKey</a></li><li><a href="rune.input.KeyboardOptions.html">KeyboardOptions</a></li><li><a href="rune.media.Sound.html">Sound</a></li><li><a href="rune.media.SoundChannel.html">SoundChannel</a></li><li><a href="rune.media.Sounds.html">Sounds</a></li><li><a href="rune.net.URLLoader.html">URLLoader</a></li><li><a href="rune.net.URLRequest.html">URLRequest</a></li><li><a href="rune.net.URLResponse.html">URLResponse</a></li><li><a href="rune.physics.Space.html">Space</a></li><li><a href="rune.physics.Velocity.html">Velocity</a></li><li><a href="rune.resource.Request.html">Request</a></li><li><a href="rune.resource.Requester.html">Requester</a></li><li><a href="rune.resource.RequesterOptions.html">RequesterOptions</a></li><li><a href="rune.resource.Requests.html">Requests</a></li><li><a href="rune.resource.Resource.html">Resource</a></li><li><a href="rune.resource.Resources.html">Resources</a></li><li><a href="rune.scene.Scene.html">Scene</a></li><li><a href="rune.scene.Scenes.html">Scenes</a></li><li><a href="rune.state.State.html">State</a></li><li><a href="rune.state.States.html">States</a></li><li><a href="rune.system.Application.html">Application</a></li><li><a href="rune.system.Config.html">Config</a></li><li><a href="rune.system.Time.html">Time</a></li><li><a href="rune.text.BitmapField.html">BitmapField</a></li><li><a href="rune.text.BitmapFormat.html">BitmapFormat</a></li><li><a href="rune.tilemap.Block.html">Block</a></li><li><a href="rune.tilemap.Tile.html">Tile</a></li><li><a href="rune.tilemap.Tilemap.html">Tilemap</a></li><li><a href="rune.tilemap.TilemapLayer.html">TilemapLayer</a></li><li><a href="rune.timer.Timer.html">Timer</a></li><li><a href="rune.timer.TimerOptions.html">TimerOptions</a></li><li><a href="rune.timer.Timers.html">Timers</a></li><li><a href="rune.tween.Sine.html">Sine</a></li><li><a href="rune.tween.Tween.html">Tween</a></li><li><a href="rune.tween.Tweens.html">Tweens</a></li><li><a href="rune.tween.TweenValue.html">TweenValue</a></li><li><a href="rune.ui.Counter.html">Counter</a></li><li><a href="rune.ui.CounterDigit.html">CounterDigit</a></li><li><a href="rune.ui.Progressbar.html">Progressbar</a></li><li><a href="rune.ui.VTList.html">VTList</a></li><li><a href="rune.ui.VTListElement.html">VTListElement</a></li><li><a href="rune.ui.VTMenu.html">VTMenu</a></li><li><a href="rune.ui.VTMenuPointer.html">VTMenuPointer</a></li><li><a href="rune.util.Executable.html">Executable</a></li><li><a href="rune.util.Filter.html">Filter</a></li><li><a href="rune.util.Math.html">Math</a></li><li><a href="rune.util.Palette.html">Palette</a></li><li><a href="rune.util.Path.html">Path</a></li><li><a href="rune.util.Paths.html">Paths</a></li><li><a href="rune.util.Stack.html">Stack</a></li><li><a href="rune.util.URL.html">URL</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.11</a> on Mon Feb 20 2023 14:40:19 GMT+0100 (Central European Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
